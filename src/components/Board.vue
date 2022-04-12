@@ -1,10 +1,26 @@
 <script setup>
-import { chessboard } from 'vue-chessboard';
-import 'vue-chessboard/dist/vue-chessboard.css';
+import {onMounted} from 'vue';
+
+//const config = {};
+
+
+// lifecycle hooks
+onMounted(() => {
+  const board = Chessboard('chessBoard', 'start');
+})
+
 </script>
 
+<style>
+  .chess-board {
+    align-content: center;
+    align-self: center;
+    width: 600px;
+  }
+</style>
+
 <template>
-  The board header
-  <chessboard />
-  The board footer
+  <div id="chessBoard" class="chess-board">Loading...</div>
+  <div id="fen"></div>
+  <div id="pgn"></div>
 </template>
