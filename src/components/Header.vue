@@ -1,14 +1,28 @@
 <script setup>
 
-import {ref} from 'vue'
+const lichessUsernameKey = "profile.lichess.username";
 
-let username = localStorage.getItem('user.lichess.username') || "";
+import {ref, onMounted} from 'vue'
+
+const username = ref(localStorage.getItem(lichessUsernameKey) || "");
 
 function getInsights() {
-  console.log(username);
+  console.log(username.value);
+  localStorage.setItem(lichessUsernameKey, username.value);
 }
 
+onMounted(() => {
+})
+
 </script>
+
+export default {
+  data() {
+    return {
+      username;
+    }
+  }
+}
 
 <template>
   <h1>Game Insights</h1>
