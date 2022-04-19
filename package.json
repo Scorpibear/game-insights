@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "chessground": "^8.2.1",
-    "vue": "^3.2.25"
+    "chess.js": "^0.13.1",
+    "vue": "^3.2.33"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.0",

@@ -17,7 +17,7 @@ async function getInsights() {
 function getEndpoint(userID) {
   const gamesToLoad = 3;
   // api reference - https://lichess.org/api#operation/apiGamesUser
-  return `https://lichess.org/api/games/user/${userID}?max=${gamesToLoad}&pgnInJson=true`;
+  return `https://lichess.org/api/games/user/${userID}?max=${gamesToLoad}&pgnInJson=true&opening=true`;
 }
 
 async function getGames(userID) {
