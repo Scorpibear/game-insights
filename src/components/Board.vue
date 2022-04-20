@@ -1,17 +1,38 @@
-<script setup>
+<script setup props>
 import {onMounted, reactive} from 'vue';
+import { Chess } from 'chess.js';
 
-defineProps({
+const props = defineProps({
   game: Object
 })
 
 const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
-let board;
+let board, chess;
+
+function replay(moves) {
+  moves.forEach(move => {
+    chess.move(move);
+    setTimeout(() => {board.position(chess.fen())}, 500);
+  })
+}
 
 // lifecycle hooks
 onMounted(() => {
-  board = Chessboard(boardID, 'start');
+  board = Chessboard(boardID, {
+    draggable: true,
+    moveSpeed: 'slow',
+    snapbackSpeed: 500,
+    snapSpeed: 100,
+    position: 'start'
+  });
+  chess = new Chess();
+  if(props.game.moves) {
+    console.log(props.game.moves);
+    setTimeout(replay, 500, props.game.moves.split(' '));
+  }
 })
+
+
 
 </script>
 
@@ -61,5 +82,5 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <footer>{{ game }}</footer>
+    <footer></footer>
 </template>
