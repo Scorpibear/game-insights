@@ -6,10 +6,11 @@ defineProps({
 })
 
 const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
+let board;
 
 // lifecycle hooks
 onMounted(() => {
-  const board = Chessboard(boardID, 'start');
+  board = Chessboard(boardID, 'start');
 })
 
 </script>
@@ -40,14 +41,18 @@ onMounted(() => {
     background: #e3e3e3;
     color: #1f1f1f;
   }
+  .opening {
+    text-align: left;
+  }
 </style>
 
 <template>
+    <div class="opening">{{ game.opening ? game.opening.eco + ': ' + game.opening.name : ''}}</div>
     <div :id="boardID" class="chess-board">Loading...</div>
     <div class="copyables">
       <div class="pair">
         <label class="name">FEN</label>
-        <input class="copyable autoselect analyse__underboard__fen" id="fen" v-model="game.fen">
+        <input class="copyable autoselect analyse__underboard__fen" id="fen">
       </div>
       <div class="pgn">
         <div class="pair">
@@ -56,4 +61,5 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <footer>{{ game }}</footer>
 </template>
