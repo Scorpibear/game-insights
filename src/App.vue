@@ -11,7 +11,7 @@ const state = reactive({games: [{pgn: "1.e4 e5"}, {pgn: "1.d4 Nf6"}, {pgn: "1.Nf
 
 <template>
   <Header @games-loaded="games => state.games = games" />
-  <div v-for="game in state.games" v-bind:key="game">
+  <div v-for="game in state.games" v-bind:key="game" class="game-view">
     <Board :game="game" />
   </div>
 </template>
@@ -23,6 +23,10 @@ const state = reactive({games: [{pgn: "1.e4 e5"}, {pgn: "1.d4 Nf6"}, {pgn: "1.Nf
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 5px;
+}
+.game-view {
+  width: 600px;
+  display: inline-block;
 }
 </style>

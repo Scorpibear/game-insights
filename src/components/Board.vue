@@ -16,28 +16,25 @@ onMounted(() => {
 
 <style>
   .chess-board {
-    width: 600px;
+    width: 460px;
   }
   textarea, input {
-    width: 340px;
+    width: 420px;
     margin: 5px;
   }
   textarea {
-    height: 360px;
+    height: 300px;
   }
   .copyables .pair {
     position: relative;
     display: flex;
     flex-flow: row wrap;
     align-items: center;
-}
+  }
   .copyables .name {
     flex: 0 0 5ch;
     font-weight: bold;
     color: #787878;
-  }
-  .copyables .copyable {
-    flex: 1 1 auto;
   }
   .copyable {
     background: #e3e3e3;
@@ -46,7 +43,6 @@ onMounted(() => {
 </style>
 
 <template>
-  <div class="chess-board">
     <div :id="boardID" class="chess-board">Loading...</div>
     <div class="copyables">
       <div class="pair">
@@ -60,5 +56,4 @@ onMounted(() => {
         </div>
       </div>
     </div>
-  </div>
 </template>
