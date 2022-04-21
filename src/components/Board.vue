@@ -1,38 +1,40 @@
 <script setup props>
+// imports
 import {onMounted, reactive} from 'vue';
 import { Chess } from 'chess.js';
 
-const props = defineProps({
-  game: Object
-})
-
-const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
+// variables
 let board, chess;
 
-function replay(moves) {
-  moves.forEach(move => {
-    chess.move(move);
-    setTimeout(() => {board.position(chess.fen())}, 500);
-  })
+const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
+
+const boardConfig = {
+  draggable: true,
+  moveSpeed: 'slow',
+  snapbackSpeed: 500,
+  snapSpeed: 100,
+  position: 'start'
+}
+
+// vue.js definitions
+const props = defineProps({
+  game: Object,
+  username: String
+})
+
+// methods
+function getOrientation(chess, username) {
+  return chess.header()?.White?.toLowerCase() == username?.toLowerCase() ? 'white' : 'black';
 }
 
 // lifecycle hooks
 onMounted(() => {
-  board = Chessboard(boardID, {
-    draggable: true,
-    moveSpeed: 'slow',
-    snapbackSpeed: 500,
-    snapSpeed: 100,
-    position: 'start'
-  });
+  board = Chessboard(boardID, boardConfig);
   chess = new Chess();
-  if(props.game.moves) {
-    console.log(props.game.moves);
-    setTimeout(replay, 500, props.game.moves.split(' '));
-  }
+  chess.load_pgn(props.game.pgn);
+  board.orientation(getOrientation(chess, props.username));
+  board.position(chess.fen());
 })
-
-
 
 </script>
 

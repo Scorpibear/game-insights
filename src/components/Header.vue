@@ -1,13 +1,19 @@
 <script setup>
+// imports
+
+import {ref, onMounted} from 'vue';
+
+// variables & constants
 
 const lichessUsernameKey = "profile.lichess.username";
 
-import {ref, onMounted} from 'vue';
+// vue.js definitions
 
 const username = ref(localStorage.getItem(lichessUsernameKey) || "");
 
 const emit = defineEmits(['gamesLoaded']);
 
+// methods
 
 async function getInsights() {
   localStorage.setItem(lichessUsernameKey, username.value);
@@ -30,7 +36,7 @@ async function getGames(userID) {
   }
   const onComplete = () => {
     console.log('games in onComplete:',  games);
-    emit('gamesLoaded', games);
+    emit('gamesLoaded', games, username.value);
   };
 
   return stream
@@ -64,18 +70,12 @@ const readStream = processLine => response => {
   return loop();
 }
 
+// lifecycle hooks
+
 onMounted(() => {
 })
 
 </script>
-
-export default {
-  data() {
-    return {
-      username;
-    }
-  }
-}
 
 <template>
   <h1>Game Insights</h1>
