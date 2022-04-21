@@ -1,9 +1,11 @@
 <script setup props>
 // imports
+
 import {onMounted, reactive} from 'vue';
 import { Chess } from 'chess.js';
 
 // variables
+
 let board, chess;
 
 const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
@@ -17,17 +19,20 @@ const boardConfig = {
 }
 
 // vue.js definitions
+
 const props = defineProps({
   game: Object,
   username: String
 })
 
 // methods
+
 function getOrientation(chess, username) {
   return chess.header()?.White?.toLowerCase() == username?.toLowerCase() ? 'white' : 'black';
 }
 
 // lifecycle hooks
+
 onMounted(() => {
   board = Chessboard(boardID, boardConfig);
   chess = new Chess();
