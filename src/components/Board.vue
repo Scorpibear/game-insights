@@ -1,7 +1,7 @@
 <script setup props>
 // imports
 
-import {onMounted, reactive} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import { Chess } from 'chess.js';
 
 // variables
@@ -27,6 +27,8 @@ const props = defineProps({
   username: String
 })
 
+const fen = ref("");
+
 // methods
 
 function getOrientation(chess, username) {
@@ -34,7 +36,8 @@ function getOrientation(chess, username) {
 }
 
 function updateBoard() {
-  board.position(chess.fen());
+  fen.value = chess.fen();
+  board.position(fen.value);
 }
 
 function replay() {
@@ -68,10 +71,10 @@ onMounted(() => {
 
 <style>
   .chess-board {
-    width: 480px;
+    width: 500px;
   }
   textarea, input {
-    width: 420px;
+    width: 450px;
     margin-top: 5px;
     margin-right: 0px;
   }
@@ -87,6 +90,7 @@ onMounted(() => {
   .copyables .name {
     flex: 0 0 5ch;
     font-weight: bold;
+    font-size: smaller;
     color: #787878;
   }
   .copyable {
@@ -111,7 +115,7 @@ onMounted(() => {
       <div class="hint">{{ hint }}</div>
       <div class="pair">
         <label class="name">FEN</label>
-        <input class="copyable autoselect analyse__underboard__fen" id="fen">
+        <input class="copyable autoselect analyse__underboard__fen" id="fen" :value="fen">
       </div>
       <div class="pgn">
         <div class="pair">
