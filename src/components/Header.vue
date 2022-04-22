@@ -78,9 +78,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <h1>Game Insights</h1>
-  <div>Lichess.org username: 
+  <h4>Game Insights for lichess username: 
     <input id="username"  type="text" v-model="username"/>
     <button @click="getInsights">Get Insights</button>
-  </div>
+  </h4>
 </template>

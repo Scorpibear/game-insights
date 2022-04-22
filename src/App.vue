@@ -26,7 +26,8 @@ const state = reactive({games: [{pgn: "1.e4 e5"}, {pgn: "1.d4 Nf6"}, {pgn: "1.Nf
   margin-top: 5px;
 }
 .game-view {
-  width: 600px;
+  width: 500px;
   display: inline-block;
+  margin: 40px;
 }
 </style>

@@ -6,13 +6,15 @@ import { Chess } from 'chess.js';
 
 // variables
 
-let board, chess;
+let board, chess, hint;
+
+const replayInterval = 250;
 
 const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
 
 const boardConfig = {
   draggable: true,
-  moveSpeed: 'slow',
+  moveSpeed: 200,
   snapbackSpeed: 500,
   snapSpeed: 100,
   position: 'start'
@@ -31,6 +33,27 @@ function getOrientation(chess, username) {
   return chess.header()?.White?.toLowerCase() == username?.toLowerCase() ? 'white' : 'black';
 }
 
+function updateBoard() {
+  board.position(chess.fen());
+}
+
+function replay() {
+  chess.reset();
+  updateBoard();
+  const moves = props.game.moves.split(' ');
+  showNextMove(moves, 0);
+}
+
+function showNextMove(moves, plyNumber) {
+  if(plyNumber < moves.length) {
+    setTimeout(() => {
+      chess.move(moves[plyNumber]);
+      updateBoard();
+      showNextMove(moves, ++plyNumber);
+    }, replayInterval);
+  }
+}
+
 // lifecycle hooks
 
 onMounted(() => {
@@ -38,18 +61,19 @@ onMounted(() => {
   chess = new Chess();
   chess.load_pgn(props.game.pgn);
   board.orientation(getOrientation(chess, props.username));
-  board.position(chess.fen());
+  updateBoard();
 })
 
 </script>
 
 <style>
   .chess-board {
-    width: 460px;
+    width: 480px;
   }
   textarea, input {
     width: 420px;
-    margin: 5px;
+    margin-top: 5px;
+    margin-right: 0px;
   }
   textarea {
     height: 300px;
@@ -70,14 +94,21 @@ onMounted(() => {
     color: #1f1f1f;
   }
   .opening {
-    text-align: left;
+    text-align: center;
+  }
+  #learn {
+    text-align: right;
   }
 </style>
 
 <template>
-    <div class="opening">{{ game.opening ? game.opening.eco + ': ' + game.opening.name : ''}}</div>
+    <div class="board-header">
+      <span class="opening">{{ game.opening ? game.opening.eco + ': ' + game.opening.name : ''}}</span>&nbsp;
+      <button @click="replay" id="learn">Learn</button>
+    </div>
     <div :id="boardID" class="chess-board">Loading...</div>
     <div class="copyables">
+      <div class="hint">{{ hint }}</div>
       <div class="pair">
         <label class="name">FEN</label>
         <input class="copyable autoselect analyse__underboard__fen" id="fen">
