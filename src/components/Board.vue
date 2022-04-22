@@ -6,7 +6,7 @@ import { Chess } from 'chess.js';
 
 // variables
 
-let board, chess, hint;
+let board, chess;
 
 const replayInterval = 250;
 
@@ -28,6 +28,7 @@ const props = defineProps({
 })
 
 const fen = ref("");
+const hint = ref("Let's learn something about this game. Press 'LEARN' when ready");
 
 // methods
 
@@ -35,9 +36,20 @@ function getOrientation(chess, username) {
   return chess.header()?.White?.toLowerCase() == username?.toLowerCase() ? 'white' : 'black';
 }
 
+function showHints() {
+  setTimeout(async () => {
+    const hostname = "umain-02.cloudapp.net:9966";
+    const url = `http://${hostname}/api/fendata?fen=${fen.value}`;
+    const response = await fetch(url);
+    const json = await response.json();
+    hint.value = json ? `Best move: ${json.bestMove}, score: ${json.sp / 100} / ${json.depth}` : ''
+  }, 0);
+}
+
 function updateBoard() {
   fen.value = chess.fen();
   board.position(fen.value);
+  showHints();
 }
 
 function replay() {
@@ -102,6 +114,10 @@ onMounted(() => {
   }
   #learn {
     text-align: right;
+    text-transform: uppercase;
+  }
+  .hint {
+    margin: 2px;
   }
 </style>
 
