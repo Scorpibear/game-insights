@@ -10,9 +10,7 @@ let board, chess;
 
 const replayInterval = 300;
 const maxReplayPlies = 18;
-
-let squareClass = 'square-55d63';
-let squareToHighlight = null;
+const squareClass = 'square-55d63';
 
 const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
 
@@ -55,13 +53,14 @@ function highlightMove(aMove) {
   if (moveData && isOurMove(moveData)) {
     $board.find('.' + squareClass).removeClass('highlight')
     $board.find('.square-' + moveData.from).addClass('highlight')
-    squareToHighlight = moveData.to
+    $board.find('.square-' + moveData.to).addClass('highlight')
+  } else {
+    $board.find('.' + squareClass).removeClass('highlight');
   }
 }
 
 function onMoveEnd () {
-  $board.find('.square-' + squareToHighlight)
-    .addClass('highlight')
+
 }
 
 function showHints() {
