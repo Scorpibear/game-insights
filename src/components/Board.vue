@@ -9,15 +9,23 @@ import { Chess } from 'chess.js';
 let board, chess;
 
 const replayInterval = 250;
+const maxReplayPlies = 18;
+
+let squareClass = 'square-55d63';
+let squareToHighlight = null;
+let colorToHighlight = null;
 
 const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
+
+let $board;
 
 const boardConfig = {
   draggable: true,
   moveSpeed: 200,
   snapbackSpeed: 500,
   snapSpeed: 100,
-  position: 'start'
+  position: 'start',
+  onMoveEnd
 }
 
 // vue.js definitions
@@ -36,13 +44,40 @@ function getOrientation(chess, username) {
   return chess.header()?.White?.toLowerCase() == username?.toLowerCase() ? 'white' : 'black';
 }
 
+function highlightMove(aMove) {
+  if(!aMove) return;
+  let possibleMoves = chess.moves({
+    verbose: true
+  });
+  let moveData = possibleMoves.find(move => move.san == aMove);
+  if (moveData) {
+    if (moveData.color === 'w') {
+      $board.find('.' + squareClass).removeClass('highlight-white')
+      $board.find('.square-' + moveData.from).addClass('highlight-white')
+      squareToHighlight = moveData.to
+      colorToHighlight = 'white'
+    } else {
+      $board.find('.' + squareClass).removeClass('highlight-black')
+      $board.find('.square-' + moveData.from).addClass('highlight-black')
+      squareToHighlight = moveData.to
+      colorToHighlight = 'black'
+    }
+  }
+}
+
+function onMoveEnd () {
+  $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-' + colorToHighlight)
+}
+
 function showHints() {
   setTimeout(async () => {
     const hostname = "umain-02.cloudapp.net:9966";
     const url = `http://${hostname}/api/fendata?fen=${fen.value}`;
     const response = await fetch(url);
     const json = await response.json();
-    hint.value = json ? `Best move: ${json.bestMove}, score: ${json.sp / 100} / ${json.depth}` : ''
+    hint.value = json ? `Best move: ${json.bestMove}, score: ${json.sp / 100} / ${json.depth}` : '';
+    highlightMove(json?.bestMove);
   }, 0);
 }
 
@@ -60,7 +95,7 @@ function replay() {
 }
 
 function showNextMove(moves, plyNumber) {
-  if(plyNumber < moves.length) {
+  if(plyNumber < moves.length && plyNumber < maxReplayPlies) {
     setTimeout(() => {
       chess.move(moves[plyNumber]);
       updateBoard();
@@ -73,6 +108,7 @@ function showNextMove(moves, plyNumber) {
 
 onMounted(() => {
   board = Chessboard(boardID, boardConfig);
+  $board = $(`#${boardID}`);
   chess = new Chess();
   chess.load_pgn(props.game.pgn);
   board.orientation(getOrientation(chess, props.username));
@@ -118,6 +154,12 @@ onMounted(() => {
   }
   .hint {
     margin: 2px;
+  }
+  .highlight-white {
+  box-shadow: inset 0 0 3px 3px greenyellow;
+  }
+  .highlight-black {
+    box-shadow: inset 0 0 3px 3px greenyellow;
   }
 </style>
 
