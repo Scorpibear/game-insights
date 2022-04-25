@@ -8,12 +8,11 @@ import { Chess } from 'chess.js';
 
 let board, chess;
 
-const replayInterval = 250;
+const replayInterval = 300;
 const maxReplayPlies = 18;
 
 let squareClass = 'square-55d63';
 let squareToHighlight = null;
-let colorToHighlight = null;
 
 const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
 
@@ -37,6 +36,7 @@ const props = defineProps({
 
 const fen = ref("");
 const hint = ref("Let's learn something about this game. Press 'LEARN' when ready");
+const bestMove = ref("");
 
 // methods
 
@@ -44,30 +44,24 @@ function getOrientation(chess, username) {
   return chess.header()?.White?.toLowerCase() == username?.toLowerCase() ? 'white' : 'black';
 }
 
+const isOurMove = moveData => board.orientation().startsWith(moveData.color);
+
 function highlightMove(aMove) {
   if(!aMove) return;
   let possibleMoves = chess.moves({
     verbose: true
   });
   let moveData = possibleMoves.find(move => move.san == aMove);
-  if (moveData) {
-    if (moveData.color === 'w') {
-      $board.find('.' + squareClass).removeClass('highlight-white')
-      $board.find('.square-' + moveData.from).addClass('highlight-white')
-      squareToHighlight = moveData.to
-      colorToHighlight = 'white'
-    } else {
-      $board.find('.' + squareClass).removeClass('highlight-black')
-      $board.find('.square-' + moveData.from).addClass('highlight-black')
-      squareToHighlight = moveData.to
-      colorToHighlight = 'black'
-    }
+  if (moveData && isOurMove(moveData)) {
+    $board.find('.' + squareClass).removeClass('highlight')
+    $board.find('.square-' + moveData.from).addClass('highlight')
+    squareToHighlight = moveData.to
   }
 }
 
 function onMoveEnd () {
   $board.find('.square-' + squareToHighlight)
-    .addClass('highlight-' + colorToHighlight)
+    .addClass('highlight')
 }
 
 function showHints() {
@@ -76,8 +70,12 @@ function showHints() {
     const url = `http://${hostname}/api/fendata?fen=${fen.value}`;
     const response = await fetch(url);
     const json = await response.json();
-    hint.value = json ? `Best move: ${json.bestMove}, score: ${json.sp / 100} / ${json.depth}` : '';
-    highlightMove(json?.bestMove);
+    if(json) {
+      bestMove.value = {san: json.bestMove, score: json.sp / 100, depth: json.depth};
+      highlightMove(json.bestMove);
+    } else {
+      bestMove.value = undefined;
+    }
   }, 0);
 }
 
@@ -87,9 +85,14 @@ function updateBoard() {
   showHints();
 }
 
-function replay() {
+function reset() {
+  hint.value = '';
   chess.reset();
   updateBoard();
+}
+
+function replay() {
+  reset();
   const moves = props.game.moves.split(' ');
   showNextMove(moves, 0);
 }
@@ -97,9 +100,16 @@ function replay() {
 function showNextMove(moves, plyNumber) {
   if(plyNumber < moves.length && plyNumber < maxReplayPlies) {
     setTimeout(() => {
-      chess.move(moves[plyNumber]);
+      let move = chess.move(moves[plyNumber]);
       updateBoard();
-      showNextMove(moves, ++plyNumber);
+      if(move.san != bestMove.value?.san && isOurMove(move)) {
+        setTimeout(() => {
+          chess.undo();
+          updateBoard();
+        }, replayInterval);
+      } else {
+        showNextMove(moves, ++plyNumber);
+      }
     }, replayInterval);
   }
 }
@@ -155,11 +165,8 @@ onMounted(() => {
   .hint {
     margin: 2px;
   }
-  .highlight-white {
+  .highlight {
   box-shadow: inset 0 0 3px 3px greenyellow;
-  }
-  .highlight-black {
-    box-shadow: inset 0 0 3px 3px greenyellow;
   }
 </style>
 
@@ -170,7 +177,12 @@ onMounted(() => {
     </div>
     <div :id="boardID" class="chess-board">Loading...</div>
     <div class="copyables">
-      <div class="hint">{{ hint }}</div>
+      <div class="best-move-info" v-if="bestMove">
+        Best move: <span>{{ bestMove.san }}</span>, score: <span>{{ bestMove.score }}</span>, depth: <span>{{ bestMove.depth }}</span>
+      </div>
+      <div class="hint">
+        {{ hint }}
+      </div>
       <div class="pair">
         <label class="name">FEN</label>
         <input class="copyable autoselect analyse__underboard__fen" id="fen" :value="fen">
