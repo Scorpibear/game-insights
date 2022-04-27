@@ -116,8 +116,8 @@ function showNextMove(moves, plyNumber) {
 // lifecycle hooks
 
 onMounted(() => {
-  board = Chessboard(boardID, boardConfig);
-  $board = $(`#${boardID}`);
+  board = window.Chessboard(boardID, boardConfig);
+  $board = window.$(`#${boardID}`);
   chess = new Chess();
   chess.load_pgn(props.game.pgn);
   board.orientation(getOrientation(chess, props.username));
