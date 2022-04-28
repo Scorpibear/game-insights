@@ -35,7 +35,6 @@ async function getGames(userID) {
     games.push(game);
   }
   const onComplete = () => {
-    console.log('games in onComplete:',  games);
     emit('gamesLoaded', games, username.value);
   };
 

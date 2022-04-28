@@ -9,7 +9,7 @@ import { Chess } from 'chess.js';
 let board, chess;
 
 const replayInterval = 300;
-const maxReplayPlies = 18;
+const maxReplayPlies = 50;
 const squareClass = 'square-55d63';
 
 const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
@@ -22,7 +22,10 @@ const boardConfig = {
   snapbackSpeed: 500,
   snapSpeed: 100,
   position: 'start',
-  onMoveEnd
+  onMoveEnd,
+  onDragStart,
+  onDrop,
+  onSnapEnd
 }
 
 // vue.js definitions
@@ -59,6 +62,45 @@ function highlightMove(aMove) {
   }
 }
 
+function onDragStart (source, piece, position, orientation) {
+  // do not pick up pieces if the game is over
+  if (chess.game_over()) return false
+
+  // only pick up pieces for the side to move
+  if ((chess.turn() === 'w' && piece.search(/^b/) !== -1) ||
+      (chess.turn() === 'b' && piece.search(/^w/) !== -1)) {
+    return false
+  }
+}
+
+function onDrop (source, target) {
+  // see if the move is legal
+  var move = chess.move({
+    from: source,
+    to: target,
+    promotion: 'q' // NOTE: always promote to a queen for example simplicity
+  })
+
+  // illegal move
+  if (move === null) return 'snapback'
+
+  updateStatus()
+}
+
+// update the board position after the piece snap
+// for castling, en passant, pawn promotion
+function onSnapEnd () {
+  board.position(chess.fen())
+}
+
+function updateStatus () {
+  fen.value = chess.fen();
+  props.game.pgn = chess.pgn();
+  showHints();
+}
+
+const getMovesFromPgn = pgn => pgn.replace(/(\[.*\])|(\d+\.\s)|(\n*)/g,'').split(' ').slice(0, -1);
+
 function onMoveEnd () {
 
 }
@@ -92,7 +134,7 @@ function reset() {
 
 function replay() {
   reset();
-  const moves = props.game.moves.split(' ');
+  const moves = getMovesFromPgn(props.game.pgn);
   showNextMove(moves, 0);
 }
 
