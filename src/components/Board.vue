@@ -33,6 +33,7 @@ const boardConfig = {
 // class instances
 
 const cheguraClient = new CheguraClient({hostname: 'umain-02.cloudapp.net', protocol: 'http', port: 9966});
+const lichessClient = new LichessClient();
 
 // vue.js definitions
 
@@ -44,6 +45,7 @@ const props = defineProps({
 const fen = ref("");
 const hint = ref("Let's learn something about this game. Press 'LEARN' when ready");
 const bestMove = ref("");
+const popularMove = ref("");
 
 // methods
 
@@ -53,18 +55,22 @@ function getOrientation(chess, username) {
 
 const isOurMove = moveData => board.orientation().startsWith(moveData.color);
 
-function highlightMove(aMove) {
-  if(!aMove) return;
+function highlightMove(aMove, type) {
+  const className = 'highlight-' + type;
+  if(!aMove) {
+    $board.find('.' + squareClass).removeClass(className);
+    return;
+  }
   let possibleMoves = chess.moves({
     verbose: true
   });
   let moveData = possibleMoves.find(move => move.san == aMove);
-  if (moveData && isOurMove(moveData)) {
-    $board.find('.' + squareClass).removeClass('highlight')
-    $board.find('.square-' + moveData.from).addClass('highlight')
-    $board.find('.square-' + moveData.to).addClass('highlight')
+  if (moveData /*&& isOurMove(moveData)*/) {
+    $board.find('.' + squareClass).removeClass(className)
+    $board.find('.square-' + moveData.from).addClass(className)
+    $board.find('.square-' + moveData.to).addClass(className)
   } else {
-    $board.find('.' + squareClass).removeClass('highlight');
+    $board.find('.' + squareClass).removeClass(className);
   }
 }
 
@@ -112,14 +118,23 @@ function onMoveEnd () {
 }
 
 function showHints() {
-  setTimeout(async () => {
-    const fenData = await cheguraClient.getFenData(fen.value);
-    if(fenData) {
-      bestMove.value = {san: fenData.bestMove, score: fenData.sp / 100, depth: fenData.depth};
-      highlightMove(fenData.bestMove);
-    } else {
+  setTimeout(() => {
+    cheguraClient.getFenData(fen.value).then(data => {
+      bestMove.value = data ? {san: data.bestMove, score: data.sp / 100, depth: data.depth} : undefined;
+    }).catch(err => {
+      console.error(err);
       bestMove.value = undefined;
-    }
+    }).finally(() => {
+      highlightMove(bestMove.value?.san, 'best');
+    });
+    lichessClient.getTheMostPopularByMasters(fen.value).then(data => {
+      popularMove.value = data?.moves?.length ? {san: data.moves[0].san, gamesAmount: data.white + data.draws + data.black} : undefined;
+    }).catch((err) => {
+      console.error(err);
+      popularMove.value = undefined;
+    }).finally(() => {
+      highlightMove(popularMove.value?.san, 'popular');
+    });
   }, 0);
 }
 
@@ -209,8 +224,11 @@ onMounted(() => {
   .hint {
     margin: 2px;
   }
-  .highlight {
-  box-shadow: inset 0 0 3px 3px greenyellow;
+  .highlight-best {
+    box-shadow: inset 0 0 3px 3px greenyellow;  
+  }
+  .highlight-popular {
+    box-shadow: inset 0 0 2px 2px cyan;
   }
 </style>
 
@@ -223,6 +241,9 @@ onMounted(() => {
     <div class="copyables">
       <div class="best-move-info" v-if="bestMove">
         Best move: <span>{{ bestMove.san }}</span>, score: <span>{{ bestMove.score }}</span>, depth: <span>{{ bestMove.depth }}</span>
+      </div>
+      <div class="popular-move-info" v-if="popularMove">
+        Popular by masters: <span>{{ popularMove.san}}</span>, games: <span>{{ popularMove.gamesAmount}}</span>
       </div>
       <div class="hint">
         {{ hint }}
