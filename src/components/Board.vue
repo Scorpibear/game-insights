@@ -3,10 +3,10 @@
 
 import {onMounted, reactive, ref} from 'vue';
 import { Chess } from 'chess.js';
+import { CheguraClient } from '../helpers/chegura-client';
+import { LichessClient } from '../helpers/lichess-client';
 
-// variables
-
-let board, chess;
+// constants
 
 const replayInterval = 300;
 const maxReplayPlies = 50;
@@ -14,7 +14,9 @@ const squareClass = 'square-55d63';
 
 const boardID = 'chessBoard' + Math.round(Math.random() * 1000000);
 
-let $board;
+// variables
+
+let board, $board, chess;
 
 const boardConfig = {
   draggable: true,
@@ -27,6 +29,10 @@ const boardConfig = {
   onDrop,
   onSnapEnd
 }
+
+// class instances
+
+const cheguraClient = new CheguraClient({hostname: 'umain-02.cloudapp.net', protocol: 'http', port: 9966});
 
 // vue.js definitions
 
@@ -107,13 +113,10 @@ function onMoveEnd () {
 
 function showHints() {
   setTimeout(async () => {
-    const hostname = "umain-02.cloudapp.net:9966";
-    const url = `http://${hostname}/api/fendata?fen=${fen.value}`;
-    const response = await fetch(url);
-    const json = await response.json();
-    if(json) {
-      bestMove.value = {san: json.bestMove, score: json.sp / 100, depth: json.depth};
-      highlightMove(json.bestMove);
+    const fenData = await cheguraClient.getFenData(fen.value);
+    if(fenData) {
+      bestMove.value = {san: fenData.bestMove, score: fenData.sp / 100, depth: fenData.depth};
+      highlightMove(fenData.bestMove);
     } else {
       bestMove.value = undefined;
     }
