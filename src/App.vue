@@ -6,9 +6,9 @@ import Board from './components/Board.vue';
 
 
 const state = reactive({username: "", games: [
-  {pgn: "1.e4 e5", moves: 'e4 e5'}, 
-  {pgn: "1.d4 Nf6", moves: 'd4 Nf6'}, 
-  {pgn: "1.Nf3 d5", moves: 'Nf3 d5'}
+  {pgn: "1. e4 c6 2. Nf3 d5 3. Nc3 ?-?"}, 
+  {pgn: "1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 ?-?"}, 
+  {pgn: "1. Nf3 d5 2. g3 Nf6 3. Bg2 ?-?"}
   ]});
 
 </script>

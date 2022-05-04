@@ -3,8 +3,8 @@
 
 import {onMounted, reactive, ref} from 'vue';
 import { Chess } from 'chess.js';
-import { CheguraClient } from '../helpers/chegura-client';
-import { LichessClient } from '../helpers/lichess-client';
+import { Backend } from '../helpers/backend';
+import { pgn2moves } from '../helpers/converters';
 
 // constants
 
@@ -24,7 +24,6 @@ const boardConfig = {
   snapbackSpeed: 500,
   snapSpeed: 100,
   position: 'start',
-  onMoveEnd,
   onDragStart,
   onDrop,
   onSnapEnd
@@ -32,8 +31,7 @@ const boardConfig = {
 
 // class instances
 
-const cheguraClient = new CheguraClient({hostname: 'umain-02.cloudapp.net', protocol: 'http', port: 9966});
-const lichessClient = new LichessClient();
+const backend = new Backend();
 
 // vue.js definitions
 
@@ -96,7 +94,8 @@ function onDrop (source, target) {
   // illegal move
   if (move === null) return 'snapback'
 
-  updateStatus()
+  updateMoveInfo();
+  updatePgn();
 }
 
 // update the board position after the piece snap
@@ -105,43 +104,34 @@ function onSnapEnd () {
   board.position(chess.fen())
 }
 
-function updateStatus () {
-  fen.value = chess.fen();
-  props.game.pgn = chess.pgn();
-  showHints();
+function updateMoveInfo () {
+  updateFen();
+  backend.getPopularMove(fen.value)
+    .then(updatePopular)
+    .catch(() => popularMove.value = undefined)
+    .finally(() => highlightMove(popularMove.value?.san, 'popular'));
+  backend.getBestMove(fen.value)
+    .then(updateBest)
+    .catch(() => bestMove.value = undefined)
+    .finally(() => highlightMove(bestMove.value?.san, 'best'));
 }
 
-const getMovesFromPgn = pgn => pgn.replace(/(\[.*\])|(\d+\.\s)|(\n*)/g,'').split(' ').slice(0, -1);
+const updateFen = () => fen.value = chess.fen();
 
-function onMoveEnd () {
+const updatePgn = () => props.game.pgn=chess.pgn();
 
+function updateBest(data) {
+  bestMove.value = data ? {san: data.bestMove, score: data.sp / 100, depth: data.depth} : undefined;
 }
 
-function showHints() {
-  setTimeout(() => {
-    cheguraClient.getFenData(fen.value).then(data => {
-      bestMove.value = data ? {san: data.bestMove, score: data.sp / 100, depth: data.depth} : undefined;
-    }).catch(err => {
-      console.error(err);
-      bestMove.value = undefined;
-    }).finally(() => {
-      highlightMove(bestMove.value?.san, 'best');
-    });
-    lichessClient.getTheMostPopularByMasters(fen.value).then(data => {
-      popularMove.value = data?.moves?.length ? {san: data.moves[0].san, gamesAmount: data.white + data.draws + data.black} : undefined;
-    }).catch((err) => {
-      console.error(err);
-      popularMove.value = undefined;
-    }).finally(() => {
-      highlightMove(popularMove.value?.san, 'popular');
-    });
-  }, 0);
+function updatePopular(data) {
+  popularMove.value = data?.moves?.length ? {san: data.moves[0].san, gamesAmount: data.white + data.draws + data.black} : undefined;
 }
 
 function updateBoard() {
-  fen.value = chess.fen();
+  updateFen();
   board.position(fen.value);
-  showHints();
+  updateMoveInfo();
 }
 
 function reset() {
@@ -152,7 +142,7 @@ function reset() {
 
 function replay() {
   reset();
-  const moves = getMovesFromPgn(props.game.pgn);
+  const moves = pgn2moves(props.game.pgn);
   showNextMove(moves, 0);
 }
 

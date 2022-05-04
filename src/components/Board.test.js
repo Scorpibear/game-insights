@@ -6,9 +6,7 @@ window.Chessboard = () => ({orientation: () => {}, position: () => {}})
 
 import Board from './Board.vue'
 
-
-
-test('eco is displayed', () => {
+it('displays eco', () => {
   const { getByText } = render(Board, {
     props: {
       game: {pgn: '', moves: '', opening: {eco: "D99", name: "New One"}},
