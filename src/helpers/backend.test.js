@@ -1,25 +1,38 @@
-import { describe, expect, it, vi} from 'vitest';
-import { LichessClient } from './lichess-client';
+import { describe, expect, it, vi } from "vitest";
+import { LichessClient } from "./lichess-client";
 
-import { Backend } from './backend';
-import { CheguraClient } from './chegura-client';
+import { Backend } from "./backend";
+import { CheguraClient } from "./chegura-client";
 
-describe('backend', () => {
+describe("backend", () => {
   let cheClient = new CheguraClient({});
   let liClient = new LichessClient();
   let backend = new Backend(cheClient, liClient);
-  describe('getPopularMove', () => {
-    it('calls lichessClient for the most popular move', () => {
-      vi.spyOn(liClient, 'getTheMostPopularByMasters').mockImplementation(() => Promise.resolve({}));
+  describe("getPopularMove", () => {
+    it("calls lichessClient for the most popular move", () => {
+      vi.spyOn(liClient, "getTheMostPopularByMasters").mockImplementation(() =>
+        Promise.resolve({})
+      );
       backend.getPopularMove();
       expect(liClient.getTheMostPopularByMasters).toHaveBeenCalled();
-    })
-  })
-  describe('getBestMove', () => {
-    it('calls cheguraClient for the best move', () => {
-      vi.spyOn(cheClient, 'getFenData').mockImplementation(() => Promise.resolve({}));
+    });
+  });
+  describe("getBestMove", () => {
+    it("calls cheguraClient for the best move", () => {
+      vi.spyOn(cheClient, "getFenData").mockImplementation(() =>
+        Promise.resolve({})
+      );
       backend.getBestMove();
       expect(cheClient.getFenData).toHaveBeenCalled();
-    })
-  })
-})
+    });
+  });
+  describe("analyze", () => {
+    it("calls chegura client", () => {
+      vi.spyOn(cheClient, "analyze").mockImplementation(() =>
+        Promise.resolve()
+      );
+      backend.analyze(["d4", "Nf6"]);
+      expect(cheClient.analyze).toHaveBeenCalledWith(["d4", "Nf6"]);
+    });
+  });
+});
