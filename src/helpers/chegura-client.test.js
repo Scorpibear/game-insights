@@ -1,15 +1,34 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { CheguraClient } from "./chegura-client";
 
 describe("CheguraClient", () => {
+  let cheguraClient = new CheguraClient({
+    hostname: "testhost",
+    protocol: "https",
+    port: 87654,
+  });
   describe("getBaseUrl", () => {
     it("uses protocol, hostname and port", () => {
-      let cheguraClient = new CheguraClient({
-        hostname: "testhost",
-        protocol: "https",
-        port: 87654,
-      });
       expect(cheguraClient.getBaseUrl()).toBe("https://testhost:87654/api/");
+    });
+  });
+  describe("analyze", () => {
+    it("calls fetch after the previous call was completed", async () => {
+      vi.spyOn(global, "fetch").mockImplementation(() => Promise.resolve());
+      await cheguraClient.analyze();
+      cheguraClient.analyze();
+      expect(global.fetch).toHaveBeenCalledOnce();
+    });
+    it("does not call fetch if moves were not defined");
+  });
+  describe("getFenData", () => {
+    it("calls fetch after the previous call was completed", async () => {
+      vi.spyOn(global, "fetch").mockImplementation(() =>
+        Promise.resolve({ json: () => {} })
+      );
+      await cheguraClient.getFenData("some fen");
+      cheguraClient.getFenData("some fen");
+      expect(global.fetch).toHaveBeenCalledOnce();
     });
   });
 });
