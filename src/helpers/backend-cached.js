@@ -1,5 +1,5 @@
 import { Backend } from "./backend";
-import NodeCache from "node-cache";
+import History from "./history";
 
 const fourHours = 1000 * 60 * 60 * 4;
 const fourDays = fourHours * 24;
@@ -8,28 +8,40 @@ const plyLimit = 50;
 export class BackendCached {
   constructor(backend) {
     this.backend = backend || new Backend();
-    this.analyzeCache = new NodeCache({ stdTTL: fourDays });
-    this.bestMoveCache = new NodeCache({ stdTTL: fourHours });
+    this.analyzeCache = new History({ ttl: fourDays });
+    this.bestMoveCache = new History({ ttl: fourHours });
   }
   analyze(moves) {
     moves = moves.slice(0, plyLimit);
     const key = moves.join(" ");
-    let result = this.analyzeCache.get(key);
-    if (!result) {
-      result = this.backend.analyze(moves);
-      this.analyzeCache.set(key, result);
+    let value = this.analyzeCache.get(key);
+    let promisedResult;
+    if (!value) {
+      promisedResult = this.backend.analyze(moves);
+      promisedResult.then(() => {
+        // analyze does not provided the output, so just saving that it has been sent
+        this.analyzeCache.set(key, "sent");
+      });
+    } else {
+      promisedResult = Promise.resolve(value);
     }
-    return result;
+    return promisedResult;
   }
   getBestMove(fen) {
-    let result = this.bestMoveCache.get(fen);
-    if (!result) {
-      result = this.backend.getBestMove(fen);
-      this.bestMoveCache.set(fen, result);
+    let value = this.bestMoveCache.get(fen);
+    let promisedResult;
+    if (!value) {
+      promisedResult = this.backend.getBestMove(fen);
+      promisedResult.then((value) => {
+        this.bestMoveCache.set(fen, value);
+      });
+    } else {
+      promisedResult = Promise.resolve(value);
     }
-    return result;
+    return promisedResult;
   }
   getPopularMove(fen) {
-    return this.lichessClient.getTheMostPopularByMasters(fen);
+    // should not be cached, returned as is
+    return this.backend.getPopularMove(fen);
   }
 }

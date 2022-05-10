@@ -1,13 +1,14 @@
-import { render, it } from "@testing-library/vue";
+import { render } from "@testing-library/vue";
+import { it } from "vitest";
 
 // mocks to make Chessboard work
 window.$ = () => {};
 window.Chessboard = () => ({ orientation: () => {}, position: () => {} });
 
-import Board from "./Board.vue";
+import BoardView from "./BoardView.vue";
 
 it("displays eco", () => {
-  const { getByText } = render(Board, {
+  const { getByText } = render(BoardView, {
     props: {
       game: { pgn: "", moves: "", opening: { eco: "D99", name: "New One" } },
       username: "testuser",

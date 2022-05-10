@@ -3,7 +3,7 @@
 
 import { onMounted, ref } from "vue";
 import { Chess } from "chess.js";
-import { Backend } from "../helpers/backend";
+import { BackendCached } from "../helpers/backend-cached";
 import { pgn2moves } from "../helpers/converters";
 
 // constants
@@ -31,7 +31,7 @@ const boardConfig = {
 
 // class instances
 
-const backend = new Backend();
+const backend = new BackendCached();
 
 // vue.js definitions
 

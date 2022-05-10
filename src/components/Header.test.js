@@ -1,13 +1,13 @@
-import { render } from '@testing-library/vue'
+import { render } from "@testing-library/vue";
+import { it } from "vitest";
 
-import Header from './Header.vue'
+import Header from "./Header.vue";
 
-test('requests lichess username', () => {
+it("requests lichess username", () => {
   const { getByText } = render(Header, {
-    props: {
-    }
-  })
+    props: {},
+  });
 
   // assert output
-  getByText('Game Insights for lichess username:')
-})
+  getByText("Game Insights for lichess username:");
+});
