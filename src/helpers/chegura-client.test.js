@@ -22,13 +22,13 @@ describe("CheguraClient", () => {
     it("does not call fetch if moves were not defined");
   });
   describe("getFenData", () => {
-    it("calls fetch after the previous call was completed", async () => {
+    it("calls fetch immediately", async () => {
       vi.spyOn(global, "fetch").mockImplementation(() =>
         Promise.resolve({ json: () => {} })
       );
       await cheguraClient.getFenData("some fen");
       cheguraClient.getFenData("some fen");
-      expect(global.fetch).toHaveBeenCalledOnce();
+      expect(global.fetch).toHaveBeenCalledTimes(2);
     });
   });
 });

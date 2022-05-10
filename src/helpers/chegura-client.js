@@ -15,17 +15,17 @@ export class CheguraClient {
       return this.lastCallResult;
     } catch (err) {
       this.errorHandler(err);
+      return Promise.reject(err);
     }
   }
   async getFenData(fen) {
     const url = `${this.getBaseUrl()}fendata?fen=${fen}`;
     try {
-      await this.lastCallResult;
       const response = await fetch(url);
-      this.lastCallResult = response.json();
-      return this.lastCallResult;
+      return response.json();
     } catch (err) {
       console.error("Could not get fenData from chegura: ", err);
+      return Promise.reject(err);
     }
   }
 }
