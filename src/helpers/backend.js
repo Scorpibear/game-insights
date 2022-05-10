@@ -17,7 +17,7 @@ export class Backend {
     return this.cheguraClient.analyze(moves);
   }
   getBestMove(fen) {
-    console.log("get best move for", fen);
+    console.log(`get best move for '${fen}'`);
     return this.cheguraClient.getFenData(fen);
   }
   getPopularMove(fen) {
