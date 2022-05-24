@@ -1,7 +1,7 @@
 <script setup>
 import { reactive } from "vue";
 
-import Header from "./components/Header.vue";
+import HeaderView from "./components/HeaderView.vue";
 import BoardView from "./components/BoardView.vue";
 
 const state = reactive({
@@ -15,7 +15,7 @@ const state = reactive({
 </script>
 
 <template>
-  <Header
+  <HeaderView
     @games-loaded="
       (games, username) => {
         state.games = games;

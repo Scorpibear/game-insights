@@ -1,10 +1,10 @@
 import { render } from "@testing-library/vue";
 import { it } from "vitest";
 
-import Header from "./Header.vue";
+import HeaderView from "./HeaderView.vue";
 
 it("requests lichess username", () => {
-  const { getByText } = render(Header, {
+  const { getByText } = render(HeaderView, {
     props: {},
   });
 
