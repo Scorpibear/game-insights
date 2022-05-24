@@ -1,7 +1,7 @@
 <script setup>
 // imports
 
-import {ref, onMounted} from 'vue';
+import { ref, onMounted } from "vue";
 
 // variables & constants
 
@@ -11,7 +11,7 @@ const lichessUsernameKey = "profile.lichess.username";
 
 const username = ref(localStorage.getItem(lichessUsernameKey) || "");
 
-const emit = defineEmits(['gamesLoaded']);
+const emit = defineEmits(["gamesLoaded"]);
 
 // methods
 
@@ -29,25 +29,23 @@ function getEndpoint(userID) {
 async function getGames(userID) {
   const apiURL = getEndpoint(userID);
   console.log(`calling ${apiURL}`);
-  const stream = fetch(apiURL, {headers: {Accept:'application/x-ndjson'}});
+  const stream = fetch(apiURL, { headers: { Accept: "application/x-ndjson" } });
   const games = [];
-  const onMessage = game => {
+  const onMessage = (game) => {
     games.push(game);
-  }
+  };
   const onComplete = () => {
-    emit('gamesLoaded', games, username.value);
+    emit("gamesLoaded", games, username.value);
   };
 
-  return stream
-    .then(readStream(onMessage))
-    .then(onComplete);
+  return stream.then(readStream(onMessage)).then(onComplete);
 }
 
-const readStream = processLine => response => {
+const readStream = (processLine) => (response) => {
   const stream = response.body.getReader();
   const matcher = /\r?\n/;
   const decoder = new TextDecoder();
-  let buf = '';
+  let buf = "";
 
   const loop = () =>
     stream.read().then(({ done, value }) => {
@@ -55,30 +53,29 @@ const readStream = processLine => response => {
         if (buf.length > 0) processLine(JSON.parse(buf));
       } else {
         const chunk = decoder.decode(value, {
-          stream: true
+          stream: true,
         });
         buf += chunk;
 
         const parts = buf.split(matcher);
         buf = parts.pop();
-        for (const i of parts.filter(p => p)) processLine(JSON.parse(i));
+        for (const i of parts.filter((p) => p)) processLine(JSON.parse(i));
         return loop();
       }
     });
 
   return loop();
-}
+};
 
 // lifecycle hooks
 
-onMounted(() => {
-})
-
+onMounted(() => {});
 </script>
 
 <template>
-  <h4>Game Insights for lichess username: 
-    <input id="username"  type="text" v-model="username"/>
+  <h4>
+    Game Insights for lichess username:
+    <input id="username" v-model="username" type="text" />
     <button @click="getInsights">Get Insights</button>
   </h4>
 </template>
