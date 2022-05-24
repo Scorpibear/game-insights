@@ -230,6 +230,10 @@ onMounted(() => {
     <div class="hint">
       {{ hint }}
     </div>
+    <div class="navigation">
+      <button class="control" @click="goBack">&laquo;</button>
+      <button class="control" @click="goNext">&raquo;</button>
+    </div>
     <div class="pair">
       <label class="name">FEN</label>
       <input
@@ -292,5 +296,11 @@ textarea {
 }
 .highlight-popular {
   box-shadow: inset 0 0 2px 2px cyan;
+}
+.control {
+  color: #5e5e5e;
+  text-transform: uppercase;
+  line-height: 1.5;
+  margin: 2pt;
 }
 </style>
