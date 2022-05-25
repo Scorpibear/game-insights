@@ -197,14 +197,21 @@ function replay() {
   showNextMove(moves, 0);
 }
 
+const history = [];
+
 function goBack() {
-  if (chess.undo()) {
+  const move = chess.undo();
+  if (move) {
+    history.push(move);
     updateBoard();
   }
 }
 
 function goNext() {
-  // TODO: implement
+  const moveObject = history.pop();
+  if (chess.move(moveObject)) {
+    updateBoard();
+  }
 }
 
 // lifecycle hooks
