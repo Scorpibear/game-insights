@@ -172,12 +172,6 @@ function reset() {
   updateBoard();
 }
 
-function replay() {
-  reset();
-  const moves = pgn2moves(pgn.value);
-  showNextMove(moves, 0);
-}
-
 function showNextMove(moves, plyNumber) {
   if (plyNumber < moves.length && plyNumber < maxReplayPlies) {
     setTimeout(() => {
@@ -193,6 +187,24 @@ function showNextMove(moves, plyNumber) {
       }
     }, replayInterval);
   }
+}
+
+// UI event handlers
+
+function replay() {
+  reset();
+  const moves = pgn2moves(pgn.value);
+  showNextMove(moves, 0);
+}
+
+function goBack() {
+  if (chess.undo()) {
+    updateBoard();
+  }
+}
+
+function goNext() {
+  // TODO: implement
 }
 
 // lifecycle hooks
