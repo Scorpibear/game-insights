@@ -22,10 +22,17 @@ export class CheguraClient {
     const url = `${this.getBaseUrl()}fendata?fen=${fen}`;
     try {
       const response = await fetch(url);
-      return response.json();
+      return response.json().then(fixFenData);
     } catch (err) {
       console.error("Could not get fenData from chegura: ", err);
       return Promise.reject(err);
     }
   }
+}
+
+function fixFenData(data) {
+  if (data && "sp" in data) {
+    data.cp = data.sp;
+  }
+  return data;
 }

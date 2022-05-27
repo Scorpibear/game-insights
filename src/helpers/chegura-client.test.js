@@ -24,11 +24,18 @@ describe("CheguraClient", () => {
   describe("getFenData", () => {
     it("calls fetch immediately", async () => {
       vi.spyOn(global, "fetch").mockImplementation(() =>
-        Promise.resolve({ json: () => {} })
+        Promise.resolve({ json: () => Promise.resolve({}) })
       );
       await cheguraClient.getFenData("some fen");
       cheguraClient.getFenData("some fen");
       expect(global.fetch).toHaveBeenCalledTimes(2);
+    });
+    it("replaces sp with cp (old API fix)", async () => {
+      vi.spyOn(global, "fetch").mockResolvedValue({
+        json: () => Promise.resolve({ sp: -13 }),
+      });
+      const data = await cheguraClient.getFenData();
+      expect(data.cp).toBe(-13);
     });
   });
 });

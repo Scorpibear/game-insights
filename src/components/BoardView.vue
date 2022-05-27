@@ -141,7 +141,7 @@ const updatePgn = () => (pgn.value = chess.pgn());
 
 function updateBest(data) {
   bestMove.value = data
-    ? { san: data.bestMove, score: data.sp / 100, depth: data.depth }
+    ? { san: data.bestMove, score: data.cp / 100, depth: data.depth }
     : undefined;
 }
 
