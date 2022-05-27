@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import { pgn2moves } from './converters';
+import { describe, expect, it } from "vitest";
+import { pgn2moves, lichess2fenData } from "./converters";
 
-describe('converters', () => {
-  describe('pgn2moves', () => {
-    it('works for lichess standard pgn', () => {
+describe("converters", () => {
+  describe("pgn2moves", () => {
+    it("works for lichess standard pgn", () => {
       const pgn = `[Event "Rated Rapid game"]
       [Site "https://lichess.org/eLGsJ1H1"]
       [Date "2022.04.30"]
@@ -14,11 +14,17 @@ describe('converters', () => {
       `;
       const moves = pgn2moves(pgn);
       expect(moves.length).toBe(55);
-      expect(moves[0]).toBe('d4');
-      expect(moves[54]).toBe('Qxa8#');
-    })
-    it('works for empty pgn', () => {
-      expect(pgn2moves('')).toEqual([]);
-    })
-  })
-})
+      expect(moves[0]).toBe("d4");
+      expect(moves[54]).toBe("Qxa8#");
+    });
+    it("works for empty pgn", () => {
+      expect(pgn2moves("")).toEqual([]);
+    });
+  });
+  describe("lichess2fenData", () => {
+    it("leaves depth as is", () => {
+      const data = lichess2fenData({ depth: 42 });
+      expect(data.depth).toBe(42);
+    });
+  });
+});
