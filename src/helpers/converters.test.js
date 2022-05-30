@@ -26,5 +26,13 @@ describe("converters", () => {
       const data = lichess2fenData({ depth: 42 });
       expect(data.depth).toBe(42);
     });
+    it("transforms pvs data to algebraic move", () => {
+      const input = {
+        fen: "rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+        pvs: [{ moves: "c7c5 c2c3 d5d4 g1f3 b8c6 c3d4 c6d4 b1c3 c8d7 f1d3" }],
+      };
+      const data = lichess2fenData(input);
+      expect(data.bestMove).toBe("c5");
+    });
   });
 });
