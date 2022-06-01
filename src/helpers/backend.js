@@ -1,5 +1,6 @@
 import { CheguraClient } from "./chegura-client";
 import { LichessClient } from "./lichess-client";
+import { lichess2fenData } from "./converters";
 
 export class Backend {
   constructor(cheguraClient, lichessClient) {
@@ -13,12 +14,19 @@ export class Backend {
     this.lichessClient = lichessClient || new LichessClient();
   }
   analyze(moves) {
-    console.log("analyze", moves);
     return this.cheguraClient.analyze(moves);
   }
-  getBestMove(fen) {
-    console.log(`get best move for '${fen}'`);
-    return this.cheguraClient.getFenData(fen);
+  async getBestMove(fen) {
+    let fenData;
+    try {
+      fenData = await this.cheguraClient.getFenData(fen);
+    } catch (err) {
+      console.error("Could not get fen data from chegura", err);
+    }
+    return (
+      fenData?.bestMove ||
+      this.lichessClient.getCloudEval(fen).then(lichess2fenData)
+    );
   }
   getPopularMove(fen) {
     return this.lichessClient.getTheMostPopularByMasters(fen);
