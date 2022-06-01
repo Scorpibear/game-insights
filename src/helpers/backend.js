@@ -23,10 +23,10 @@ export class Backend {
     } catch (err) {
       console.error("Could not get fen data from chegura", err);
     }
-    return (
-      fenData?.bestMove ||
-      this.lichessClient.getCloudEval(fen).then(lichess2fenData)
-    );
+    const result = fenData?.bestMove
+      ? fenData
+      : this.lichessClient.getCloudEval(fen).then(lichess2fenData);
+    return result;
   }
   getPopularMove(fen) {
     return this.lichessClient.getTheMostPopularByMasters(fen);

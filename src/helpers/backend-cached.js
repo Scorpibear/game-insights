@@ -36,7 +36,7 @@ export class BackendCached {
   getBestMove(fen) {
     let value = this.bestMoveCache.get(fen);
     let promisedResult;
-    if (value === undefined) {
+    if (!value || !value.bestMove) {
       promisedResult = this.backend.getBestMove(fen);
       promisedResult.then((value) => {
         this.bestMoveCache.set(fen, value);

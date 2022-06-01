@@ -120,14 +120,14 @@ function onSnapEnd() {
   board.position(chess.fen());
 }
 
-function updateMoveInfo() {
+async function updateMoveInfo() {
   updateFen();
   backend
     .getPopularMove(fen.value)
     .then(updatePopular)
     .catch(() => (popularMove.value = undefined))
     .finally(() => highlightMove(popularMove.value?.san, "popular"));
-  backend
+  await backend
     .getBestMove(fen.value)
     .then(updateBest)
     .catch(() => (bestMove.value = undefined))
@@ -140,9 +140,10 @@ const updateFen = () => (fen.value = chess.fen());
 const updatePgn = () => (pgn.value = chess.pgn());
 
 function updateBest(data) {
-  bestMove.value = data
-    ? { san: data.bestMove, score: data.cp / 100, depth: data.depth }
-    : undefined;
+  bestMove.value =
+    data && data.bestMove
+      ? { san: data.bestMove, score: data.cp / 100, depth: data.depth }
+      : undefined;
 }
 
 function updatePopular(data) {
@@ -160,10 +161,10 @@ function analyze() {
   }
 }
 
-function updateBoard() {
+async function updateBoard() {
   updateFen();
   board.position(fen.value);
-  updateMoveInfo();
+  await updateMoveInfo();
 }
 
 function reset() {
@@ -173,14 +174,17 @@ function reset() {
 }
 
 function showNextMove(moves, plyNumber) {
+  console.log("showNextMove", moves[plyNumber]);
   if (plyNumber < moves.length && plyNumber < maxReplayPlies) {
-    setTimeout(() => {
+    setTimeout(async () => {
+      const bestMoveSan = bestMove.value?.san;
       let move = chess.move(moves[plyNumber]);
-      updateBoard();
-      if (move.san != bestMove.value?.san && isOurMove(move)) {
-        setTimeout(() => {
+      await updateBoard();
+      if (move.san != bestMoveSan && isOurMove(move)) {
+        // to have a chance see the wrong move made before reverting back
+        setTimeout(async () => {
           chess.undo();
-          updateBoard();
+          await updateBoard();
         }, replayInterval);
       } else {
         showNextMove(moves, ++plyNumber);

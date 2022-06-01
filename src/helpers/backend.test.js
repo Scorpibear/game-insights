@@ -47,6 +47,16 @@ describe("backend", () => {
       const data = await backend.getBestMove(fenSample);
       expect(data).toEqual({ bestMove: "Bf5", cp: -13, depth: 50 });
     });
+    it("throws error if there is no best move data from any sources", async () => {
+      vi.spyOn(cheClient, "getFenData").mockRejectedValue("err1");
+      vi.spyOn(liClient, "getCloudEval").mockRejectedValue("err2");
+      try {
+        const res = await backend.getBestMove(fenSample);
+        throw new Error(`result ${res} returned while was not expected`);
+      } catch (err) {
+        // as expected
+      }
+    });
   });
   describe("analyze", () => {
     it("calls chegura client", () => {
