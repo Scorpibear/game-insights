@@ -22,17 +22,28 @@ describe("converters", () => {
     });
   });
   describe("lichess2fenData", () => {
+    const input = {
+      fen: "rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+      depth: 42,
+      pvs: [
+        {
+          moves: "e7e6 d2d4 c7c5 c2c3 b8c6 g1f3 c8d7 b1a3 c5d4 c3d4",
+          cp: 27,
+        },
+      ],
+    };
+
     it("leaves depth as is", () => {
-      const data = lichess2fenData({ depth: 42 });
+      const data = lichess2fenData(input);
       expect(data.depth).toBe(42);
     });
     it("transforms pvs data to algebraic move", () => {
-      const input = {
-        fen: "rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
-        pvs: [{ moves: "c7c5 c2c3 d5d4 g1f3 b8c6 c3d4 c6d4 b1c3 c8d7 f1d3" }],
-      };
       const data = lichess2fenData(input);
-      expect(data.bestMove).toBe("c5");
+      expect(data.bestMove).toBe("e6");
+    });
+    it("move cp to the top level property", () => {
+      const data = lichess2fenData(input);
+      expect(data.cp).toBe(27);
     });
   });
 });

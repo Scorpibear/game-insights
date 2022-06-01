@@ -10,8 +10,11 @@ export const pgn2moves = (pgn) =>
 export function lichess2fenData(input) {
   const result = { depth: input.depth };
   const chess = new Chess(input.fen);
-  const move = input?.pvs?.length ? input.pvs[0].moves.split(" ")[0] : "";
-  const moveObject = chess.move(move, { sloppy: true });
-  result.bestMove = moveObject?.san;
+  if (input.pvs && input.pvs.length && input.pvs[0].moves) {
+    const move = input.pvs[0].moves.split(" ")[0];
+    const moveObject = chess.move(move, { sloppy: true });
+    result.bestMove = moveObject?.san;
+    result.cp = input.pvs[0].cp;
+  }
   return result;
 }
