@@ -7,9 +7,9 @@ export class Backend {
     this.cheguraClient =
       cheguraClient ||
       new CheguraClient({
-        hostname: "umain-02.cloudapp.net",
-        protocol: "http",
-        port: 9966,
+        hostname: "bestmoves.azurewebsites.net", //"umain-02.cloudapp.net",
+        protocol: "https", //"http",
+        //port: 9966,
       });
     this.lichessClient = lichessClient || new LichessClient();
   }

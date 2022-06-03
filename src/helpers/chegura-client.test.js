@@ -11,6 +11,13 @@ describe("CheguraClient", () => {
     it("uses protocol, hostname and port", () => {
       expect(cheguraClient.getBaseUrl()).toBe("https://testhost:87654/api/");
     });
+    it("if protocol is ommitted, skips it", () => {
+      let testClient = new CheguraClient({
+        hostname: "newhost",
+        protocol: "https",
+      });
+      expect(testClient.getBaseUrl()).toBe("https://newhost/api/");
+    });
   });
   describe("analyze", () => {
     it("calls fetch after the previous call was completed", async () => {
