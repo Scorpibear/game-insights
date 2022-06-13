@@ -68,6 +68,9 @@ function getOrientation(chess, username) {
 const isOurMove = (moveData) => board.orientation().startsWith(moveData.color);
 
 function highlightMove(aMove, type) {
+  if (!$board) {
+    return;
+  }
   const className = "highlight-" + type;
   if (!aMove) {
     $board.find("." + squareClass).removeClass(className);

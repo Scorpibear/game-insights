@@ -17,17 +17,19 @@ export class BackendCached {
       name: "bestMoveCache",
     });
   }
-  analyze(moves) {
+  async analyze(moves) {
     moves = moves.slice(0, plyLimit);
     const key = moves.join(" ");
     let value = this.analyzeCache.get(key);
     let promisedResult;
     if (value === undefined) {
-      promisedResult = this.backend.analyze(moves);
-      promisedResult.then(() => {
+      try {
+        promisedResult = await this.backend.analyze(moves);
         // analyze does not provided the output, so just saving that it has been sent
         this.analyzeCache.set(key, "sent");
-      });
+      } catch (err) {
+        promisedResult = Promise.reject(err);
+      }
     } else {
       promisedResult = Promise.resolve(value);
     }

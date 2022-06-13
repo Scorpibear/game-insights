@@ -19,5 +19,16 @@ describe("backendCached", () => {
       await cached.analyze(["d4"]);
       expect(backend.analyze).toHaveBeenCalledOnce();
     });
+    it("rejects the promise when analyze of backend rejects the promise", async () => {
+      vi.spyOn(backend, "analyze").mockImplementation(() =>
+        Promise.reject("something went wrong")
+      );
+      try {
+        await cached.analyze(["e4", "e5", "Nf3"]);
+        expect.fail("error was supressed");
+      } catch (err) {
+        expect(err).toContain("something went wrong");
+      }
+    });
   });
 });
