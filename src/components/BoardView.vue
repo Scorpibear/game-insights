@@ -27,6 +27,7 @@ const boardConfig = {
   onDragStart,
   onDrop,
   onSnapEnd,
+  pieceTheme: "/img/chesspieces/wikipedia/{piece}.png",
 };
 
 // class instances
