@@ -4,6 +4,8 @@ import { LichessClient } from "./lichess-client";
 import { Backend } from "./backend";
 import { CheguraClient } from "./chegura-client";
 
+const spyOn = vi.spyOn;
+
 describe("backend", () => {
   let cheClient = new CheguraClient({});
   let liClient = new LichessClient();
@@ -12,26 +14,58 @@ describe("backend", () => {
 
   describe("getPopularMove", () => {
     it("calls lichessClient for the most popular move", () => {
-      vi.spyOn(liClient, "getTheMostPopularByMasters").mockImplementation(() =>
+      spyOn(liClient, "getTheMostPopularByMasters").mockImplementation(() =>
         Promise.resolve({})
       );
       backend.getPopularMove();
       expect(liClient.getTheMostPopularByMasters).toHaveBeenCalled();
     });
   });
+  describe("getPopularMoves", () => {
+    it("calls lichessClient to get top 5 most popular by masters", async () => {
+      spyOn(liClient, "getTheMostPopularByMasters").mockImplementation(() =>
+        Promise.resolve({})
+      );
+      await backend.getPopularMoves(fenSample);
+      expect(liClient.getTheMostPopularByMasters).toHaveBeenCalled();
+    });
+    it("calls lichessClient to get top 5 most popular online", async () => {
+      spyOn(liClient, "getTheMostPopularOnline").mockImplementation(() => {
+        Promise.resolve({});
+      });
+      await backend.getPopularMoves(fenSample);
+      expect(liClient.getTheMostPopularOnline).toHaveBeenCalled();
+    });
+    it("merge number of games", async () => {
+      spyOn(liClient, "getTheMostPopularByMasters").mockImplementation(() =>
+        Promise.resolve({
+          moves: [{ san: "d4", white: 1, draws: 2, black: 3 }],
+        })
+      );
+      spyOn(liClient, "getTheMostPopularOnline").mockImplementation(() =>
+        Promise.resolve({
+          moves: [{ san: "d4", white: 4, draws: 5, black: 6 }],
+        })
+      );
+      const results = await backend.getPopularMoves(fenSample);
+      expect(results.moves).toEqual([
+        { san: "d4", masterGamesAmount: 6, onlineGamesAmount: 15 },
+      ]);
+    });
+  });
   describe("getBestMove", () => {
     it("calls cheguraClient for the best move", () => {
-      vi.spyOn(cheClient, "getFenData").mockImplementation(() =>
+      spyOn(cheClient, "getFenData").mockImplementation(() =>
         Promise.resolve({})
       );
       backend.getBestMove();
       expect(cheClient.getFenData).toHaveBeenCalled();
     });
     it("get lichess /api/cloud-eval if not data from chegura", async () => {
-      vi.spyOn(cheClient, "getFenData").mockImplementation(() =>
+      spyOn(cheClient, "getFenData").mockImplementation(() =>
         Promise.resolve({})
       );
-      vi.spyOn(liClient, "getCloudEval").mockImplementation(() =>
+      spyOn(liClient, "getCloudEval").mockImplementation(() =>
         Promise.resolve({
           fen: "rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
           knodes: 13683,
@@ -48,8 +82,8 @@ describe("backend", () => {
       expect(data).toEqual({ bestMove: "Bf5", cp: -13, depth: 50 });
     });
     it("throws error if there is no best move data from any sources", async () => {
-      vi.spyOn(cheClient, "getFenData").mockRejectedValue("err1");
-      vi.spyOn(liClient, "getCloudEval").mockRejectedValue("err2");
+      spyOn(cheClient, "getFenData").mockRejectedValue("err1");
+      spyOn(liClient, "getCloudEval").mockRejectedValue("err2");
       try {
         const res = await backend.getBestMove(fenSample);
         throw new Error(`result ${res} returned while was not expected`);
@@ -60,9 +94,7 @@ describe("backend", () => {
   });
   describe("analyze", () => {
     it("calls chegura client", () => {
-      vi.spyOn(cheClient, "analyze").mockImplementation(() =>
-        Promise.resolve()
-      );
+      spyOn(cheClient, "analyze").mockImplementation(() => Promise.resolve());
       backend.analyze(["d4", "Nf6"]);
       expect(cheClient.analyze).toHaveBeenCalledWith(["d4", "Nf6"]);
     });

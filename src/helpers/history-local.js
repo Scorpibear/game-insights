@@ -18,7 +18,7 @@ export default class HistoryLocal extends History {
   }
   set(key, value) {
     let result = super.set(key, value);
-    if (this.localStorageKey && localStorage) {
+    if (this.localStorageKey && global.localStorage) {
       localStorage.setItem(this.localStorageKey, JSON.stringify([...this.map]));
     }
     return result;

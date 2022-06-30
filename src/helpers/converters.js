@@ -18,3 +18,26 @@ export function lichess2fenData(input) {
   }
   return result;
 }
+
+export function mergeGameStats(masters, online) {
+  const jointData = {
+    moves: masters?.moves?.map(({ san, white, draws, black }) => ({
+      san,
+      masterGamesAmount: white + draws + black,
+      onlineGamesAmount: 0,
+    })),
+  };
+  online?.moves?.forEach(({ san, white, draws, black }) => {
+    let el = jointData?.moves?.find((el) => el.san == san);
+    if (el) {
+      el.onlineGamesAmount = white + draws + black;
+    } else {
+      jointData?.moves?.push({
+        san,
+        masterGamesAmount: 0,
+        onlineGamesAmount: white + draws + black,
+      });
+    }
+  });
+  return jointData;
+}

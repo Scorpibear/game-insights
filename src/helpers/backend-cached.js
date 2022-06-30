@@ -52,4 +52,7 @@ export class BackendCached {
     // should not be cached, returned as is
     return this.backend.getPopularMove(fen);
   }
+  async getPopularMoves(fen) {
+    return await this.backend.getPopularMoves(fen);
+  }
 }
