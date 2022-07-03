@@ -4,7 +4,7 @@
 import { onMounted, ref } from "vue";
 import { Chess } from "chess.js";
 import { BackendCached } from "../helpers/backend-cached";
-import { pgn2moves } from "../helpers/converters";
+import { pgn2moves, formatPopular } from "../helpers/converters";
 
 // constants
 
@@ -247,14 +247,8 @@ onMounted(() => {
       >, depth: <span>{{ bestMove.depth }}</span>
     </div>
     <div v-if="popularMoves" class="popular-move-info">
-      <span>Popular(masters/online): </span>
-      <span>
-        <span v-for="move in popularMoves" :key="move.san"
-          >{{ move.san }}({{ move.masterGamesAmount }}/{{
-            move.onlineGamesAmount
-          }})</span
-        >
-      </span>
+      <span>Popular(masters+online): </span>
+      <span>{{ formatPopular(popularMoves) }}</span>
     </div>
     <div class="hint">
       {{ hint }}

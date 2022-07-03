@@ -18,9 +18,13 @@ export class LichessClient {
   }
   async getCloudEval(fen) {
     const url = `https://lichess.org/api/cloud-eval?fen=${fen}`;
-    const response = await fetch(url, {
-      headers: { Accept: "application/json" },
-    });
-    return response.json();
+    try {
+      const response = await fetch(url, {
+        headers: { Accept: "application/json" },
+      });
+      return response.json();
+    } catch (err) {
+      return {}; // no cloud eval - not an issue
+    }
   }
 }

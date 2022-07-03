@@ -21,11 +21,11 @@ export class Backend {
     try {
       fenData = await this.cheguraClient.getFenData(fen);
     } catch (err) {
-      console.error("Could not get fen data from chegura", err);
+      fenData = {};
     }
     const result = fenData?.bestMove
       ? fenData
-      : this.lichessClient.getCloudEval(fen).then(lichess2fenData);
+      : this.lichessClient.getCloudEval(fen).then(lichess2fenData).catch();
     return result;
   }
   async getPopularMove(fen) {

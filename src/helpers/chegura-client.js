@@ -23,9 +23,9 @@ export class CheguraClient {
     const url = `${this.getBaseUrl()}fendata?fen=${fen}&code=A1M51hEuXS8ivHQCNo0rmPkIgeg-I7CosdyYDLIV0kAaAzFuymxztg==`;
     try {
       const response = await fetch(url);
-      return response.json().then(fixFenData);
+      return response.json();
     } catch (err) {
-      console.error("Could not get fenData from chegura: ", err);
+      console.error(`Could not get fenData from bestmovedb for ${fen}: `, err);
       return Promise.reject(err);
     }
   }

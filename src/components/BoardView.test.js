@@ -18,7 +18,7 @@ describe("BoardView", () => {
 
     getByText("D99: New One");
   });
-  it("shows popular by masters/online", () => {
+  it("shows popular by masters+online", () => {
     const { getByText } = render(BoardView, {
       props: {
         game: { pgn: "1.e4" },
@@ -26,6 +26,6 @@ describe("BoardView", () => {
       },
     });
 
-    getByText("Popular(masters/online):");
+    getByText("Popular(masters+online):");
   });
 });

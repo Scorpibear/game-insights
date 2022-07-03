@@ -41,3 +41,22 @@ export function mergeGameStats(masters, online) {
   });
   return jointData;
 }
+
+export const num2k = (num) =>
+  num >= 1e12
+    ? Math.floor(num / 1e12) + "Q"
+    : num >= 1e9
+    ? Math.floor(num / 1e9) + "B"
+    : num >= 1e6
+    ? Math.floor(num / 1e6) + "M"
+    : num >= 1e3
+    ? Math.floor(num / 1e3) + "K"
+    : "" + num;
+
+export const formatPopular = (movesData) =>
+  movesData
+    .map(
+      ({ san, masterGamesAmount, onlineGamesAmount }) =>
+        `${san} (${num2k(masterGamesAmount)}+${num2k(onlineGamesAmount)})`
+    )
+    .join(", ");
