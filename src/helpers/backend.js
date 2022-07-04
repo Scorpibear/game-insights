@@ -1,6 +1,6 @@
 import { CheguraClient } from "./chegura-client";
 import { LichessClient } from "./lichess-client";
-import { lichess2fenData } from "./converters";
+import { lichess2fenData, mergeGameStats } from "./converters";
 
 export class Backend {
   constructor(cheguraClient, lichessClient) {
@@ -21,14 +21,26 @@ export class Backend {
     try {
       fenData = await this.cheguraClient.getFenData(fen);
     } catch (err) {
-      console.error("Could not get fen data from chegura", err);
+      fenData = {};
     }
     const result = fenData?.bestMove
       ? fenData
-      : this.lichessClient.getCloudEval(fen).then(lichess2fenData);
+      : this.lichessClient.getCloudEval(fen).then(lichess2fenData).catch();
     return result;
   }
-  getPopularMove(fen) {
-    return this.lichessClient.getTheMostPopularByMasters(fen);
+  async getPopularMove(fen) {
+    const movesData = await this.lichessClient.getTheMostPopularByMasters(fen);
+    return movesData && movesData.length ? movesData[0] : null;
+  }
+  async getPopularMoves(fen) {
+    let jointData = {};
+    try {
+      const masters = await this.lichessClient.getTheMostPopularByMasters(fen);
+      const online = await this.lichessClient.getTheMostPopularOnline(fen);
+      jointData = mergeGameStats(masters, online);
+    } catch (err) {
+      console.error(err);
+    }
+    return jointData;
   }
 }

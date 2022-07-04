@@ -11,4 +11,5 @@ export default defineConfig({
     // (requires installing happy-dom as a peer dependency)
     environment: "happy-dom",
   },
+  publicPath: process.env.NODE_ENV === "production" ? "/game-insights/" : "/",
 });

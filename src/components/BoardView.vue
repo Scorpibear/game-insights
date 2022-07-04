@@ -4,7 +4,7 @@
 import { onMounted, ref } from "vue";
 import { Chess } from "chess.js";
 import { BackendCached } from "../helpers/backend-cached";
-import { pgn2moves } from "../helpers/converters";
+import { pgn2moves, formatPopular } from "../helpers/converters";
 
 // constants
 
@@ -27,6 +27,7 @@ const boardConfig = {
   onDragStart,
   onDrop,
   onSnapEnd,
+  pieceTheme: "/img/chesspieces/wikipedia/{piece}.png",
 };
 
 // class instances
@@ -55,7 +56,7 @@ const hint = ref(
   "Let's learn something about this game. Press 'LEARN' when ready"
 );
 const bestMove = ref(null);
-const popularMove = ref(null);
+const popularMoves = ref([]);
 
 // methods
 
@@ -126,10 +127,10 @@ function onSnapEnd() {
 async function updateMoveInfo() {
   updateFen();
   backend
-    .getPopularMove(fen.value)
+    .getPopularMoves(fen.value)
     .then(updatePopular)
-    .catch(() => (popularMove.value = undefined))
-    .finally(() => highlightMove(popularMove.value?.san, "popular"));
+    .catch(() => (popularMoves.value = []))
+    .finally(() => highlightMove(popularMoves.value?.[0]?.san, "popular"));
   await backend
     .getBestMove(fen.value)
     .then(updateBest)
@@ -149,13 +150,9 @@ function updateBest(data) {
       : undefined;
 }
 
+// need a sample of the data format
 function updatePopular(data) {
-  popularMove.value = data?.moves?.length
-    ? {
-        san: data.moves[0].san,
-        gamesAmount: data.white + data.draws + data.black,
-      }
-    : undefined;
+  popularMoves.value = data?.moves?.slice(0, 3);
 }
 
 function analyze() {
@@ -249,9 +246,9 @@ onMounted(() => {
       >, score: <span>{{ bestMove.score }}</span
       >, depth: <span>{{ bestMove.depth }}</span>
     </div>
-    <div v-if="popularMove" class="popular-move-info">
-      Popular by masters: <span>{{ popularMove.san }}</span
-      >, games: <span>{{ popularMove.gamesAmount }}</span>
+    <div v-if="popularMoves" class="popular-move-info">
+      <span>Popular(masters+online): </span>
+      <span>{{ formatPopular(popularMoves) }}</span>
     </div>
     <div class="hint">
       {{ hint }}

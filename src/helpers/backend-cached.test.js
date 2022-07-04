@@ -1,9 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import { BackendCached } from "./backend-cached";
+const spyOn = vi.spyOn;
 
 describe("backendCached", () => {
-  let backend = { analyze: () => {} };
+  let backend = {
+    analyze: () => {},
+    getPopularMoves: () => Promise.resolve([{}]),
+  };
   let cached = new BackendCached(backend);
+  let fen = "some test fen";
+
   describe("constructor", () => {
     it("creates named local histories", () => {
       expect(cached.analyzeCache.options.name).toBe("analyzeCache");
@@ -30,5 +36,14 @@ describe("backendCached", () => {
         expect(err).toContain("something went wrong");
       }
     });
+  });
+  describe("getPopularMoves", () => {
+    it("calls backend when cache is empty", () => {
+      spyOn(backend, "getPopularMoves");
+      cached.getPopularMoves(fen);
+      expect(backend.getPopularMoves).toHaveBeenCalled();
+    });
+    it("calls backend when cache is expired");
+    it("uses cache when it presented");
   });
 });

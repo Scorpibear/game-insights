@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pgn2moves, lichess2fenData } from "./converters";
+import { pgn2moves, lichess2fenData, num2k, formatPopular } from "./converters";
 
 describe("converters", () => {
   describe("pgn2moves", () => {
@@ -44,6 +44,38 @@ describe("converters", () => {
     it("move cp to the top level property", () => {
       const data = lichess2fenData(input);
       expect(data.cp).toBe(27);
+    });
+  });
+  describe("num2k", () => {
+    it("makes 1000 as 1K", () => {
+      expect(num2k(1000)).toBe("1K");
+    });
+    it("leaves 999 as is", () => {
+      expect(num2k(999)).toBe("999");
+    });
+    it("makes 1000000 as 1M", () => {
+      expect(num2k(1000000)).toBe("1M");
+    });
+    it("makes 1000000000 as 1B", () => {
+      expect(num2k(1000000000)).toBe("1B");
+    });
+    it("makes 1e12 as 1Q", () => {
+      expect(num2k(1e12)).toBe("1Q");
+    });
+    it("makes 1234567 as 1M", () => {
+      expect(num2k(1234567)).toBe("1M");
+    });
+    it("makes 1093761 as 1M", () => {
+      expect(num2k(1093761)).toBe("1M");
+    });
+  });
+  describe("formatPopular", () => {
+    it("displays as a readable comma-separated string", () => {
+      const movesData = [
+        { san: "e4", masterGamesAmount: 10, onlineGamesAmount: 100 },
+        { san: "d4", masterGamesAmount: 5, onlineGamesAmount: 50 },
+      ];
+      expect(formatPopular(movesData)).toBe("e4 (10+100), d4 (5+50)");
     });
   });
 });
