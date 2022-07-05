@@ -4,13 +4,13 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "npx vite",
+    "build": "npx vite build",
     "postbuild": "cd dist && mkdir img && cd img && mkdir chesspieces && cd ../.. && cp -r ./img/chesspieces/* ./dist/img/chesspieces/",
-    "preview": "vite preview",
+    "preview": "npx vite preview",
     "test": "npx vitest",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
-    "format": "prettier .  --write"
+    "lint": "npx eslint --ext .js,.vue --ignore-path .gitignore --fix src",
+    "format": "npx prettier .  --write"
   },
   "dependencies": {
     "chess.js": "^0.13.1",
