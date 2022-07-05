@@ -8,7 +8,7 @@
     "build": "vite build",
     "postbuild": "cd dist && mkdir img && cd img && mkdir chesspieces && cd ../.. && cp -r ./img/chesspieces/* ./dist/img/chesspieces/",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "npx vitest",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "format": "prettier .  --write"
   },
