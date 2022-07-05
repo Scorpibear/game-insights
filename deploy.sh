@@ -7,7 +7,6 @@ set -e
 npm run build
 
 # navigate into the build output directory
-cp -r img/chesspieces/ dist/img/chesspieces/
 cd dist
 
 git init
