@@ -35,11 +35,10 @@ const state = reactive({
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 5px;
+  margin-top: 5pt;
 }
 .game-view {
-  width: 520px;
   display: inline-block;
-  margin: 40px;
+  margin: 5pt;
 }
 </style>

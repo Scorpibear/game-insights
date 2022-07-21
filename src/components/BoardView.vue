@@ -238,25 +238,27 @@ onMounted(() => {
     }}</span
     >&nbsp;
     <button id="learn" @click="replay">Learn</button>
+    <div class="hint">
+      {{ hint }}
+    </div>
   </div>
   <div :id="boardID" class="chess-board">Loading...</div>
-  <div class="copyables">
+  <div class="stats">
     <div v-if="bestMove" class="best-move-info">
-      Best move: <span>{{ bestMove.san }}</span
+      Best: <span>{{ bestMove.san }}</span
       >, score: <span>{{ bestMove.score }}</span
       >, depth: <span>{{ bestMove.depth }}</span>
     </div>
     <div v-if="popularMoves" class="popular-move-info">
-      <span>Popular(masters+online): </span>
+      <span>Popular: </span>
       <span>{{ formatPopular(popularMoves) }}</span>
     </div>
-    <div class="hint">
-      {{ hint }}
-    </div>
-    <div class="navigation">
-      <button class="control" @click="goBack">&laquo;</button>
-      <button class="control" @click="goNext">&raquo;</button>
-    </div>
+  </div>
+  <div class="navigation">
+    <button class="control" @click="goBack">&laquo;</button>
+    <button class="control" @click="goNext">&raquo;</button>
+  </div>
+  <div class="copyables">
     <div class="pair">
       <label class="name">FEN</label>
       <input
@@ -276,23 +278,17 @@ onMounted(() => {
 </template>
 
 <style>
-.chess-board {
-  width: 500px;
-}
 textarea,
 input {
-  width: 450px;
   margin-top: 5px;
   margin-right: 0px;
-}
-textarea {
-  height: 300px;
+  margin-left: 0px;
+  width: 100%;
 }
 .copyables .pair {
   position: relative;
   display: flex;
-  flex-flow: row wrap;
-  align-items: center;
+  align-content: center;
 }
 .copyables .name {
   flex: 0 0 5ch;
@@ -305,7 +301,7 @@ textarea {
   color: #1f1f1f;
 }
 .opening {
-  text-align: center;
+  text-align: left;
 }
 #learn {
   text-align: right;
@@ -325,5 +321,13 @@ textarea {
   text-transform: uppercase;
   line-height: 1.5;
   margin: 2pt;
+}
+.square-55d63 {
+  touch-action: none;
+}
+.stats {
+  word-wrap: normal;
+  width: auto;
+  font-size: smaller;
 }
 </style>
