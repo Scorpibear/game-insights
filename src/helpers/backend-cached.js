@@ -3,6 +3,7 @@ import HistoryLocal from "./history-local";
 
 const fourHours = 1000 * 60 * 60 * 4;
 const fourDays = fourHours * 24;
+const fourWeeks = fourDays * 7;
 const plyLimit = 50;
 
 export class BackendCached {
@@ -13,8 +14,12 @@ export class BackendCached {
       name: "analyzeCache",
     });
     this.bestMoveCache = new HistoryLocal({
-      ttl: fourHours,
+      ttl: fourDays,
       name: "bestMoveCache",
+    });
+    this.popularCache = new HistoryLocal({
+      ttl: fourWeeks,
+      name: "popularCache",
     });
   }
   async analyze(moves) {
@@ -49,8 +54,17 @@ export class BackendCached {
     return promisedResult;
   }
   getPopularMove(fen) {
-    // should not be cached, returned as is
-    return this.backend.getPopularMove(fen);
+    let value = this.popularCache.get(fen);
+    let promisedResult;
+    if (!value) {
+      promisedResult = this.backend.getPopularMove(fen);
+      promisedResult.then((value) => {
+        this.popularCache.set(fen, value);
+      });
+    } else {
+      promisedResult = Promise.resolve(value);
+    }
+    return promisedResult;
   }
   async getPopularMoves(fen) {
     return await this.backend.getPopularMoves(fen);
