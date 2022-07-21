@@ -73,9 +73,28 @@ onMounted(() => {});
 </script>
 
 <template>
-  <h4>
-    Game Insights for lichess username:
-    <input id="username" v-model="username" type="text" />
-    <button @click="getInsights">Get Insights</button>
+  <h4 class="input">
+    <label>Game insights for: </label>
+    <input
+      id="username"
+      v-model="username"
+      type="text"
+      title="lichess username"
+    />
+    <button @click="getInsights">Get!</button>
   </h4>
 </template>
+
+<style scoped>
+.input {
+  display: flex;
+  justify-content: center;
+}
+label {
+  margin-right: 5pt;
+}
+#username {
+  max-width: 120pt;
+  margin: 0px;
+}
+</style>

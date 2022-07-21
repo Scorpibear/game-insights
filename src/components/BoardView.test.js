@@ -26,6 +26,6 @@ describe("BoardView", () => {
       },
     });
 
-    getByText("Popular(masters+online):");
+    getByText("Popular:");
   });
 });

@@ -9,5 +9,5 @@ it("requests lichess username", () => {
   });
 
   // assert output
-  getByText("Game Insights for lichess username:");
+  getByText("Game insights for:");
 });
