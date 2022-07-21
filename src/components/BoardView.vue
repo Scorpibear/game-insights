@@ -244,14 +244,23 @@ onMounted(() => {
   </div>
   <div :id="boardID" class="chess-board">Loading...</div>
   <div class="stats">
-    <div v-if="bestMove" class="best-move-info">
-      Best: <span>{{ bestMove.san }}</span
-      >, score: <span>{{ bestMove.score }}</span
-      >, depth: <span>{{ bestMove.depth }}</span>
+    <div class="best-move-info">
+      Best:
+      <span v-if="bestMove" id="best-move-data"
+        ><span>{{ bestMove.san }}</span
+        >, score: <span>{{ bestMove.score }}</span
+        >, depth: <span>{{ bestMove.depth }}</span>
+      </span>
+      <span v-else> no data </span>
     </div>
-    <div v-if="popularMoves" class="popular-move-info">
+    <div class="popular-move-info">
       <span>Popular: </span>
-      <span>{{ formatPopular(popularMoves) }}</span>
+      <span
+        v-if="popularMoves && popularMoves.length"
+        id="popular-moves-data"
+        >{{ formatPopular(popularMoves) }}</span
+      >
+      <span v-else> no data </span>
     </div>
   </div>
   <div class="navigation">
