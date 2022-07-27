@@ -13,7 +13,7 @@
     "format": "prettier .  --write"
   },
   "dependencies": {
-    "chess.js": "^0.13.1",
+    "chess.js": "^0.13.4",
     "node-cache": "^5.1.2",
     "vue": "^3.2.37"
   },
