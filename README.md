@@ -2,6 +2,7 @@
 
 Game Insights provides you with the insights about your games played at lichess based on the modern (and runtime!) opening theory, helping you to get advantage in each game you played from the first moves.
 
-[![Build Status](https://app.travis-ci.com/Scorpibear/game-insights.svg?branch=master)](https://app.travis-ci.com/Scorpibear/game-insights)
+[![Build Status](https://github.com/Scorpibear/game-insights/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/Scorpibear/game-insights/actions/workflows/node.js.yml)
 [![Coverage Status](https://codecov.io/gh/Scorpibear/game-insights/coverage.svg)](https://codecov.io/gh/Scorpibear/game-insights)
-[Edit on StackBlitz ⚡️](https://stackblitz.com/edit/vitejs-vite-rnw4nh)
+
+To test - go to https://scorpibear.github.io/game-insights/
