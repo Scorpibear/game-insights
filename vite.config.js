@@ -10,6 +10,9 @@ export default defineConfig({
     // simulate DOM with happy-dom
     // (requires installing happy-dom as a peer dependency)
     environment: "happy-dom",
+    coverage: {
+      reporter: ["text", "json", "html"],
+    },
   },
   publicPath: process.env.NODE_ENV === "production" ? "/game-insights/" : "/",
 });
