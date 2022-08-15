@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@testing-library/vue": "^6.4.2",
-    "@vitejs/plugin-vue": "^2.3.0",
+    "@vitejs/plugin-vue": "^2.3.4",
     "c8": "^7.12.0",
     "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
