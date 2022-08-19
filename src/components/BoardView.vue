@@ -5,6 +5,7 @@ import { onMounted, ref } from "vue";
 import { Chess } from "chess.js";
 import { BackendCached } from "../helpers/backend-cached";
 import { pgn2moves, formatPopular } from "../helpers/converters";
+import boardHelper from "../helpers/board-helper";
 
 // constants
 
@@ -59,12 +60,6 @@ const bestMove = ref(null);
 const popularMoves = ref([]);
 
 // methods
-
-function getOrientation(chess, username) {
-  return chess.header()?.White?.toLowerCase() == username?.toLowerCase()
-    ? "white"
-    : "black";
-}
 
 const isOurMove = (moveData) => board.orientation().startsWith(moveData.color);
 
@@ -226,7 +221,7 @@ onMounted(() => {
   $board = window.$(`#${boardID}`);
   chess = new Chess();
   chess.load_pgn(pgn.value);
-  board.orientation(getOrientation(chess, props.username));
+  board.orientation(boardHelper.identifyOrientation(chess, props.username));
   updateBoard();
 });
 </script>
