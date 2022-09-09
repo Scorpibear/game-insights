@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { pgn2moves, lichess2fenData, num2k, formatPopular } from "./converters";
+import {
+  pgn2moves,
+  lichess2fenData,
+  num2k,
+  formatBest,
+  formatPopular,
+} from "./converters";
 
 describe("converters", () => {
   describe("pgn2moves", () => {
@@ -67,6 +73,28 @@ describe("converters", () => {
     });
     it("makes 1093761 as 1M", () => {
       expect(num2k(1093761)).toBe("1M");
+    });
+  });
+  describe("formatBest", () => {
+    it("uses cp if score is missed", () => {
+      expect(formatBest({ bestMove: "Nf3", cp: 12, depth: 50 })).toEqual({
+        san: "Nf3",
+        score: 0.12,
+        depth: 50,
+      });
+    });
+    it("uses score as is if present", () => {
+      expect(formatBest({ bestMove: "Nf3", score: 0.12, depth: 50 })).toEqual({
+        san: "Nf3",
+        score: 0.12,
+        depth: 50,
+      });
+    });
+    it("transforms null into undefined", () => {
+      expect(formatBest(null)).toBeUndefined();
+    });
+    it("returns undefined if bestMove is missed", () => {
+      expect(formatBest({ cp: -67, depth: 67 })).toBeUndefined();
     });
   });
   describe("formatPopular", () => {

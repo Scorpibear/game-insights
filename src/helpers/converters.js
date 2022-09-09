@@ -53,6 +53,15 @@ export const num2k = (num) =>
     ? Math.floor(num / 1e3) + "K"
     : "" + num;
 
+export const formatBest = (data) =>
+  data && data.bestMove
+    ? {
+        san: data.bestMove,
+        score: data.score !== undefined ? data.score : data.cp / 100,
+        depth: data.depth,
+      }
+    : undefined;
+
 export const formatPopular = (movesData) =>
   movesData
     .map(

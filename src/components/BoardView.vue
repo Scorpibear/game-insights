@@ -4,7 +4,7 @@
 import { onMounted, ref } from "vue";
 import { Chess } from "chess.js";
 import { BackendCached } from "../helpers/backend-cached";
-import { pgn2moves, formatPopular } from "../helpers/converters";
+import { pgn2moves, formatPopular, formatBest } from "../helpers/converters";
 import boardHelper from "../helpers/board-helper";
 
 // constants
@@ -128,7 +128,7 @@ async function updateMoveInfo() {
     .finally(() => highlightMove(popularMoves.value?.[0]?.san, "popular"));
   await backend
     .getBestMove(fen.value)
-    .then(updateBest)
+    .then((data) => (bestMove.value = formatBest(data)))
     .catch(() => (bestMove.value = undefined))
     .finally(() => highlightMove(bestMove.value?.san, "best"))
     .then(analyze);
@@ -137,13 +137,6 @@ async function updateMoveInfo() {
 const updateFen = () => (fen.value = chess.fen());
 
 const updatePgn = () => (pgn.value = chess.pgn());
-
-function updateBest(data) {
-  bestMove.value =
-    data && data.bestMove
-      ? { san: data.bestMove, score: data.cp / 100, depth: data.depth }
-      : undefined;
-}
 
 // need a sample of the data format
 function updatePopular(data) {
