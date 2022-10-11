@@ -1,16 +1,26 @@
-import { describe, expect, it, vi } from "vitest";
-import { LichessClient } from "./lichess-client";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { Backend } from "./backend";
-import { CheguraClient } from "./chegura-client";
 
 const spyOn = vi.spyOn;
 
 describe("backend", () => {
-  let cheClient = new CheguraClient({});
-  let liClient = new LichessClient();
-  let backend = new Backend(cheClient, liClient);
+  let cheClient = {
+    getFenBase: () => Promise.resolve([]),
+    getFenData: () => Promise.resolve({ bestMove: "Nf3" }),
+    analyze: () => Promise.resolve(),
+  };
+  let liClient = {
+    getCloudEval: () => Promise.resolve({ bestMove: "d4" }),
+    getTheMostPopularByMasters: () => Promise.resolve({}),
+    getTheMostPopularOnline: () => Promise.resolve({}),
+  };
+  let backend;
   let fenSample = "rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2";
+
+  beforeAll(() => {
+    backend = new Backend(cheClient, liClient);
+  });
 
   describe("getPopularMove", () => {
     it("calls lichessClient for the most popular move", () => {
@@ -54,15 +64,15 @@ describe("backend", () => {
     });
   });
   describe("getBestMove", () => {
-    it("calls cheguraClient for the best move", () => {
-      spyOn(cheClient, "getFenData").mockImplementation(() =>
-        Promise.resolve({})
+    it("calls bestMoveCache for the best move", () => {
+      spyOn(backend.bestMoveCache, "getFenData").mockImplementation(() =>
+        Promise.resolve({ bestMove: "Nf6" })
       );
       backend.getBestMove();
-      expect(cheClient.getFenData).toHaveBeenCalled();
+      expect(backend.bestMoveCache.getFenData).toHaveBeenCalled();
     });
-    it("get lichess /api/cloud-eval if not data from chegura", async () => {
-      spyOn(cheClient, "getFenData").mockImplementation(() =>
+    it("get lichess /api/cloud-eval if not data from bestMoveCache", async () => {
+      spyOn(backend.bestMoveCache, "getFenData").mockImplementation(() =>
         Promise.resolve({})
       );
       spyOn(liClient, "getCloudEval").mockImplementation(() =>
@@ -81,15 +91,18 @@ describe("backend", () => {
       const data = await backend.getBestMove(fenSample);
       expect(data).toEqual({ bestMove: "Bf5", cp: -13, depth: 50 });
     });
-    it("throws error if there is no best move data from any sources", async () => {
+    it("returns undefined if there is no best move data from any sources", async () => {
       spyOn(cheClient, "getFenData").mockRejectedValue("err1");
       spyOn(liClient, "getCloudEval").mockRejectedValue("err2");
-      try {
-        const res = await backend.getBestMove(fenSample);
-        throw new Error(`result ${res} returned while was not expected`);
-      } catch (err) {
-        // as expected
-      }
+      const res = await backend.getBestMove(fenSample);
+      expect(res).toBeUndefined();
+    });
+    it("does not spoil console with errors if there is no data from any sources", async () => {
+      spyOn(console, "error");
+      spyOn(cheClient, "getFenData").mockRejectedValue("err1");
+      spyOn(liClient, "getCloudEval").mockRejectedValue("err2");
+      await backend.getBestMove(fenSample);
+      expect(console.error).not.toHaveBeenCalled();
     });
   });
   describe("analyze", () => {

@@ -30,6 +30,25 @@ describe("CheguraClient", () => {
     });
     it("does not call fetch if moves were not defined");
   });
+  describe("getFenBase", () => {
+    it("fetches url and returns as json result", async () => {
+      const data = [["fen1", { bestMove: "Nf3", cp: 12, depth: 55 }]];
+      vi.spyOn(global, "fetch").mockResolvedValue({
+        json: () => Promise.resolve(data),
+      });
+      expect(await cheguraClient.getFenBase()).toBe(data);
+    });
+    it("logs error if fetch fails", async () => {
+      vi.spyOn(console, "error").mockImplementation(() => {});
+      vi.spyOn(global, "fetch").mockRejectedValue("server is down");
+      try {
+        await cheguraClient.getFenBase();
+      } catch (e) {
+        // suppress the error not to spam in console while testing
+      }
+      expect(console.error).toHaveBeenCalled();
+    });
+  });
   describe("getFenData", () => {
     it("calls fetch immediately", async () => {
       spyOn(global, "fetch").mockImplementation(() =>

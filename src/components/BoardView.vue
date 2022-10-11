@@ -33,7 +33,7 @@ const boardConfig = {
 
 // class instances
 
-const backend = new BackendCached();
+const backend = BackendCached.getShared();
 
 // vue.js definitions
 
@@ -162,7 +162,6 @@ function reset() {
 }
 
 function showNextMove(moves, plyNumber) {
-  console.log("showNextMove", moves[plyNumber]);
   if (plyNumber < moves.length && plyNumber < maxReplayPlies) {
     setTimeout(async () => {
       const bestMoveSan = bestMove.value?.san;

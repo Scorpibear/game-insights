@@ -13,9 +13,7 @@ describe("backendCached", () => {
   describe("constructor", () => {
     it("creates named local histories", () => {
       expect(cached.analyzeCache.options.name).toBe("analyzeCache");
-      expect(cached.bestMoveCache.options.name).toBe("bestMoveCache");
       expect(cached.analyzeCache.constructor.name).toBe("HistoryLocal");
-      expect(cached.bestMoveCache.constructor.name).toBe("HistoryLocal");
     });
   });
   describe("analyze", () => {

@@ -19,6 +19,17 @@ export class CheguraClient {
       return Promise.reject(err);
     }
   }
+  async getFenBase() {
+    const url = `${this.getBaseUrl()}fenbase?code=zwz2bDT31bM6DjNMn8wehRbrRHUyUBhOUvH4jrq-S18wAzFuKCjW1A==`;
+    try {
+      const response = await fetch(url);
+      const fenBase = await response.json();
+      return fenBase;
+    } catch (err) {
+      console.error("Could not get fen base: ", err);
+      return Promise.reject(err);
+    }
+  }
   async getFenData(fen) {
     const url = `${this.getBaseUrl()}fendata?fen=${fen}&code=A1M51hEuXS8ivHQCNo0rmPkIgeg-I7CosdyYDLIV0kAaAzFuymxztg==`;
     try {
@@ -29,11 +40,4 @@ export class CheguraClient {
       return Promise.reject(err);
     }
   }
-}
-
-function fixFenData(data) {
-  if (data && "sp" in data) {
-    data.cp = data.sp;
-  }
-  return data;
 }

@@ -1,6 +1,7 @@
 import { CheguraClient } from "./chegura-client";
 import { LichessClient } from "./lichess-client";
 import { lichess2fenData, mergeGameStats } from "./converters";
+import BestMoveCache from "./best-move-cache";
 
 export class Backend {
   constructor(cheguraClient, lichessClient) {
@@ -12,6 +13,7 @@ export class Backend {
         //port: 9966,
       });
     this.lichessClient = lichessClient || new LichessClient();
+    this.bestMoveCache = new BestMoveCache(this.cheguraClient);
   }
   analyze(moves) {
     return this.cheguraClient.analyze(moves);
@@ -19,13 +21,16 @@ export class Backend {
   async getBestMove(fen) {
     let fenData;
     try {
-      fenData = await this.cheguraClient.getFenData(fen);
+      fenData = await this.bestMoveCache.getFenData(fen);
     } catch (err) {
       fenData = {};
     }
     const result = fenData?.bestMove
       ? fenData
-      : this.lichessClient.getCloudEval(fen).then(lichess2fenData).catch();
+      : this.lichessClient
+          .getCloudEval(fen)
+          .then(lichess2fenData)
+          .catch(() => {});
     return result;
   }
   async getPopularMove(fen) {
