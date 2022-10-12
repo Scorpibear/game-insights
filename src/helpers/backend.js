@@ -23,7 +23,7 @@ export class Backend {
     try {
       fenData = await this.bestMoveCache.getFenData(fen);
     } catch (err) {
-      fenData = {};
+      // do nothing, no need to spam in console
     }
     const result = fenData?.bestMove
       ? fenData
@@ -32,10 +32,6 @@ export class Backend {
           .then(lichess2fenData)
           .catch(() => {});
     return result;
-  }
-  async getPopularMove(fen) {
-    const movesData = await this.lichessClient.getTheMostPopularByMasters(fen);
-    return movesData && movesData.length ? movesData[0] : null;
   }
   async getPopularMoves(fen) {
     let jointData = {};

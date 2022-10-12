@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   pgn2moves,
   lichess2fenData,
+  mergeGameStats,
   num2k,
   formatBest,
   formatPopular,
@@ -50,6 +51,24 @@ describe("converters", () => {
     it("move cp to the top level property", () => {
       const data = lichess2fenData(input);
       expect(data.cp).toBe(27);
+    });
+  });
+  describe("mergeGameStats", () => {
+    it("online stats extends master", () => {
+      const master = { moves: [{ san: "d4", white: 3, draws: 2, black: 1 }] };
+      const online = {
+        moves: [
+          { san: "e4", white: 8, draws: 5, black: 3 },
+          { san: "d4", white: 30, draws: 20, black: 10 },
+        ],
+      };
+      const expected = {
+        moves: [
+          { san: "d4", masterGamesAmount: 6, onlineGamesAmount: 60 },
+          { san: "e4", masterGamesAmount: 0, onlineGamesAmount: 16 },
+        ],
+      };
+      expect(mergeGameStats(master, online)).toEqual(expected);
     });
   });
   describe("num2k", () => {
