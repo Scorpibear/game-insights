@@ -1,26 +1,25 @@
 import { Backend } from "./backend";
 import HistoryLocal from "./history-local";
+import { fourDays, fourWeeks } from "./constants";
 
-const fourHours = 1000 * 60 * 60 * 4;
-const fourDays = fourHours * 24;
-const fourWeeks = fourDays * 7;
 const plyLimit = 50;
 
 export class BackendCached {
+  static sharedInstance;
   constructor(backend) {
     this.backend = backend || new Backend();
     this.analyzeCache = new HistoryLocal({
       ttl: fourDays,
       name: "analyzeCache",
     });
-    this.bestMoveCache = new HistoryLocal({
-      ttl: fourDays,
-      name: "bestMoveCache",
-    });
     this.popularCache = new HistoryLocal({
       ttl: fourWeeks,
       name: "popularCache",
     });
+  }
+  static getShared() {
+    this.sharedInstance = this.sharedInstance || new BackendCached();
+    return this.sharedInstance;
   }
   async analyze(moves) {
     moves = moves.slice(0, plyLimit);
@@ -40,18 +39,8 @@ export class BackendCached {
     }
     return promisedResult;
   }
-  getBestMove(fen) {
-    let value = this.bestMoveCache.get(fen);
-    let promisedResult;
-    if (!value || !value.bestMove) {
-      promisedResult = this.backend.getBestMove(fen);
-      promisedResult.then((value) => {
-        this.bestMoveCache.set(fen, value);
-      });
-    } else {
-      promisedResult = Promise.resolve(value);
-    }
-    return promisedResult;
+  async getBestMove(fen) {
+    return await this.backend.getBestMove(fen);
   }
   getPopularMove(fen) {
     let value = this.popularCache.get(fen);

@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { pgn2moves, lichess2fenData, num2k, formatPopular } from "./converters";
+import {
+  pgn2moves,
+  lichess2fenData,
+  mergeGameStats,
+  num2k,
+  formatBest,
+  formatPopular,
+} from "./converters";
 
 describe("converters", () => {
   describe("pgn2moves", () => {
@@ -46,6 +53,24 @@ describe("converters", () => {
       expect(data.cp).toBe(27);
     });
   });
+  describe("mergeGameStats", () => {
+    it("online stats extends master", () => {
+      const master = { moves: [{ san: "d4", white: 3, draws: 2, black: 1 }] };
+      const online = {
+        moves: [
+          { san: "e4", white: 8, draws: 5, black: 3 },
+          { san: "d4", white: 30, draws: 20, black: 10 },
+        ],
+      };
+      const expected = {
+        moves: [
+          { san: "d4", masterGamesAmount: 6, onlineGamesAmount: 60 },
+          { san: "e4", masterGamesAmount: 0, onlineGamesAmount: 16 },
+        ],
+      };
+      expect(mergeGameStats(master, online)).toEqual(expected);
+    });
+  });
   describe("num2k", () => {
     it("makes 1000 as 1K", () => {
       expect(num2k(1000)).toBe("1K");
@@ -67,6 +92,28 @@ describe("converters", () => {
     });
     it("makes 1093761 as 1M", () => {
       expect(num2k(1093761)).toBe("1M");
+    });
+  });
+  describe("formatBest", () => {
+    it("uses cp if score is missed", () => {
+      expect(formatBest({ bestMove: "Nf3", cp: 12, depth: 50 })).toEqual({
+        san: "Nf3",
+        score: 0.12,
+        depth: 50,
+      });
+    });
+    it("uses score as is if present", () => {
+      expect(formatBest({ bestMove: "Nf3", score: 0.12, depth: 50 })).toEqual({
+        san: "Nf3",
+        score: 0.12,
+        depth: 50,
+      });
+    });
+    it("transforms null into undefined", () => {
+      expect(formatBest(null)).toBeUndefined();
+    });
+    it("returns undefined if bestMove is missed", () => {
+      expect(formatBest({ cp: -67, depth: 67 })).toBeUndefined();
     });
   });
   describe("formatPopular", () => {

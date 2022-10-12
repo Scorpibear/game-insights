@@ -7,15 +7,30 @@ export class CheguraClient {
   }
   async analyze(moves) {
     const url = `${this.getBaseUrl()}analyze?code=YChrCbCY07S7aCaEamHr7mXp-oZN3h892sYTF00QrSdGAzFuM4Sjtg==`;
+    return new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          await this.lastCallResult;
+          this.lastCallResult = fetch(url, {
+            method: "POST",
+            body: JSON.stringify({ moves }),
+          }).catch(this.errorHandler);
+          resolve(this.lastCallResult);
+        } catch (err) {
+          this.errorHandler(err);
+          reject(err);
+        }
+      }, 100);
+    });
+  }
+  async getFenBase() {
+    const url = `${this.getBaseUrl()}fenbase?code=zwz2bDT31bM6DjNMn8wehRbrRHUyUBhOUvH4jrq-S18wAzFuKCjW1A==`;
     try {
-      await this.lastCallResult;
-      this.lastCallResult = fetch(url, {
-        method: "POST",
-        body: JSON.stringify({ moves }),
-      }).catch(this.errorHandler);
-      return this.lastCallResult;
+      const response = await fetch(url);
+      const fenBase = await response.json();
+      return fenBase;
     } catch (err) {
-      this.errorHandler(err);
+      console.error("Could not get fen base: ", err);
       return Promise.reject(err);
     }
   }
@@ -29,11 +44,4 @@ export class CheguraClient {
       return Promise.reject(err);
     }
   }
-}
-
-function fixFenData(data) {
-  if (data && "sp" in data) {
-    data.cp = data.sp;
-  }
-  return data;
 }

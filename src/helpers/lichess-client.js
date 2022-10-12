@@ -17,14 +17,19 @@ export class LichessClient {
     return response.json();
   }
   async getCloudEval(fen) {
-    const url = `https://lichess.org/api/cloud-eval?fen=${fen}`;
-    try {
-      const response = await fetch(url, {
-        headers: { Accept: "application/json" },
-      });
-      return response.json();
-    } catch (err) {
-      return {}; // no cloud eval - not an issue
-    }
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        const url = `https://lichess.org/api/cloud-eval?fen=${fen}`;
+        try {
+          const response = await fetch(url, {
+            headers: { Accept: "application/json" },
+          });
+          const result = await response.json();
+          resolve(result);
+        } catch (err) {
+          resolve({}); // no cloud eval - not an issue
+        }
+      }, 100);
+    });
   }
 }
