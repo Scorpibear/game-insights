@@ -7,17 +7,21 @@ export class CheguraClient {
   }
   async analyze(moves) {
     const url = `${this.getBaseUrl()}analyze?code=YChrCbCY07S7aCaEamHr7mXp-oZN3h892sYTF00QrSdGAzFuM4Sjtg==`;
-    try {
-      await this.lastCallResult;
-      this.lastCallResult = fetch(url, {
-        method: "POST",
-        body: JSON.stringify({ moves }),
-      }).catch(this.errorHandler);
-      return this.lastCallResult;
-    } catch (err) {
-      this.errorHandler(err);
-      return Promise.reject(err);
-    }
+    return new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          await this.lastCallResult;
+          this.lastCallResult = fetch(url, {
+            method: "POST",
+            body: JSON.stringify({ moves }),
+          }).catch(this.errorHandler);
+          resolve(this.lastCallResult);
+        } catch (err) {
+          this.errorHandler(err);
+          reject(err);
+        }
+      }, 100);
+    });
   }
   async getFenBase() {
     const url = `${this.getBaseUrl()}fenbase?code=zwz2bDT31bM6DjNMn8wehRbrRHUyUBhOUvH4jrq-S18wAzFuKCjW1A==`;
