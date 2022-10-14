@@ -26,6 +26,7 @@ export function mergeGameStats(masters, online) {
       masterGamesAmount: white + draws + black,
       onlineGamesAmount: 0,
     })),
+    opening: masters?.opening,
   };
   online?.moves?.forEach(({ san, white, draws, black }) => {
     let el = jointData?.moves?.find((el) => el.san == san);

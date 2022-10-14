@@ -42,20 +42,12 @@ export class BackendCached {
   async getBestMove(fen) {
     return await this.backend.getBestMove(fen);
   }
-  getPopularMove(fen) {
-    let value = this.popularCache.get(fen);
-    let promisedResult;
-    if (!value) {
-      promisedResult = this.backend.getPopularMove(fen);
-      promisedResult.then((value) => {
-        this.popularCache.set(fen, value);
-      });
-    } else {
-      promisedResult = Promise.resolve(value);
-    }
-    return promisedResult;
-  }
   async getPopularMoves(fen) {
-    return await this.backend.getPopularMoves(fen);
+    let result = this.popularCache.get(fen);
+    if (!result) {
+      result = await this.backend.getPopularMoves(fen);
+      this.popularCache.set(fen, result);
+    }
+    return result;
   }
 }
