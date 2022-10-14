@@ -58,6 +58,7 @@ const hint = ref(
 );
 const bestMove = ref(null);
 const popularMoves = ref([]);
+const openingInfo = ref({});
 
 // methods
 
@@ -141,6 +142,9 @@ const updatePgn = () => (pgn.value = chess.pgn());
 // need a sample of the data format
 function updatePopular(data) {
   popularMoves.value = data?.moves?.slice(0, 3);
+  if (data?.opening) {
+    openingInfo.value = data?.opening;
+  }
 }
 
 function analyze() {
@@ -221,7 +225,7 @@ onMounted(() => {
 <template>
   <div class="board-header">
     <span class="opening">{{
-      game.opening ? game.opening.eco + ": " + game.opening.name : ""
+      openingInfo?.eco ? openingInfo.eco + ": " + openingInfo.name : ""
     }}</span
     >&nbsp;
     <button id="learn" @click="replay">Learn</button>
