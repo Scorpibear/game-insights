@@ -61,7 +61,7 @@ export const formatBest = (data) =>
         score: data.score !== undefined ? data.score : data.cp / 100,
         depth: data.depth,
       }
-    : undefined;
+    : null;
 
 export const formatPopular = (movesData) =>
   movesData

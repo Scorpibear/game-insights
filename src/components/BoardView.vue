@@ -121,18 +121,19 @@ function onSnapEnd() {
 }
 
 async function updateMoveInfo() {
-  updateFen();
-  backend
-    .getPopularMoves(fen.value)
-    .then(updatePopular)
-    .catch(() => (popularMoves.value = []))
-    .finally(() => highlightMove(popularMoves.value?.[0]?.san, "popular"));
+  bestMove.value = undefined;
+  popularMoves.value = undefined;
   await backend
     .getBestMove(fen.value)
     .then((data) => (bestMove.value = formatBest(data)))
-    .catch(() => (bestMove.value = undefined))
+    .catch(() => (bestMove.value = null))
     .finally(() => highlightMove(bestMove.value?.san, "best"))
     .then(analyze);
+  await backend
+    .getPopularMoves(fen.value)
+    .then(updatePopular)
+    .catch(() => (popularMoves.value = null))
+    .finally(() => highlightMove(popularMoves.value?.[0]?.san, "popular"));
 }
 
 const updateFen = () => (fen.value = chess.fen());
@@ -155,8 +156,8 @@ function analyze() {
 
 async function updateBoard() {
   updateFen();
-  board.position(fen.value);
   await updateMoveInfo();
+  board.position(fen.value);
 }
 
 function reset() {
@@ -242,7 +243,9 @@ onMounted(() => {
         >, score: <span>{{ bestMove.score }}</span
         >, depth: <span>{{ bestMove.depth }}</span>
       </span>
-      <span v-else> no data </span>
+      <span v-else>
+        {{ bestMove === undefined ? "searching..." : "no data" }}
+      </span>
     </div>
     <div class="popular-move-info">
       <span>Popular: </span>
@@ -251,7 +254,9 @@ onMounted(() => {
         id="popular-moves-data"
         >{{ formatPopular(popularMoves) }}</span
       >
-      <span v-else> no data </span>
+      <span v-else>
+        {{ popularMoves === undefined ? "searching..." : "no data" }}
+      </span>
     </div>
   </div>
   <div class="navigation">
