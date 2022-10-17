@@ -49,6 +49,11 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  bestMove: {
+    type: Object,
+    default: null,
+    required: false,
+  },
 });
 
 const fen = ref("");
@@ -56,7 +61,7 @@ const pgn = ref("");
 const hint = ref(
   "Let's learn something about this game. Press 'LEARN' when ready"
 );
-const bestMove = ref(null);
+const bestMove = ref(props.bestMove);
 const popularMoves = ref([]);
 const openingInfo = ref({});
 
@@ -238,10 +243,9 @@ onMounted(() => {
   <div class="stats">
     <div class="best-move-info">
       Best:
-      <span v-if="bestMove" id="best-move-data"
-        ><span>{{ bestMove.san }}</span
-        >, score: <span>{{ bestMove.score }}</span
-        >, depth: <span>{{ bestMove.depth }}</span>
+      <span v-if="bestMove" id="best-move-data">
+        {{ bestMove.san }}, score: {{ bestMove.score }}, depth:
+        {{ bestMove.depth }}
       </span>
       <span v-else>
         {{ bestMove === undefined ? "searching..." : "no data" }}
