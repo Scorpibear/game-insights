@@ -109,11 +109,11 @@ describe("converters", () => {
         depth: 50,
       });
     });
-    it("transforms null into undefined", () => {
-      expect(formatBest(null)).toBeUndefined();
+    it("null in, null out", () => {
+      expect(formatBest(null)).toBeNull();
     });
-    it("returns undefined if bestMove is missed", () => {
-      expect(formatBest({ cp: -67, depth: 67 })).toBeUndefined();
+    it("returns null if bestMove is missed", () => {
+      expect(formatBest({ cp: -67, depth: 67 })).toBeNull();
     });
   });
   describe("formatPopular", () => {
