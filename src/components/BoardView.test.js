@@ -22,15 +22,30 @@ describe("BoardView", () => {
     const { getByText } = render(BoardView, {
       props: {
         game: { pgn: "1. e4 e5" },
+        username: "testuser",
         bestMove: { san: "h3", score: "0.59", depth: 46 },
       },
     });
     getByText("h3, score: 0.59, depth: 46");
   });
+  it("displays popular moves", () => {
+    const { getByText } = render(BoardView, {
+      props: {
+        game: { pgn: "1. e4 e5" },
+        username: "testuser",
+        popularMoves: [
+          { san: "Be3", masterGamesAmount: 35000, onlineGamesAmount: 323000 },
+          { san: "Bg5", masterGamesAmount: 22000, onlineGamesAmount: 485000 },
+        ],
+      },
+    });
+    getByText("Be3 (35K+323K), Bg5 (22K+485K)");
+  });
   it("displays 'no data' twice for bestMove and popularMoves", () => {
     const { getAllByText } = render(BoardView, {
       props: {
         game: { pgn: "1. e4 e5" },
+        username: "testuser",
         bestMove: null,
       },
     });

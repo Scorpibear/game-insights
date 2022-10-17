@@ -54,6 +54,13 @@ const props = defineProps({
     default: null,
     required: false,
   },
+  popularMoves: {
+    type: Array,
+    default() {
+      return [];
+    },
+    required: false,
+  },
 });
 
 const fen = ref("");
@@ -62,7 +69,7 @@ const hint = ref(
   "Let's learn something about this game. Press 'LEARN' when ready"
 );
 const bestMove = ref(props.bestMove);
-const popularMoves = ref([]);
+const popularMoves = ref(props.popularMoves);
 const openingInfo = ref({});
 
 // methods
