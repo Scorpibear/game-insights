@@ -48,6 +48,16 @@ describe("converters", () => {
       const data = lichess2fenData(input);
       expect(data.bestMove).toBe("e6");
     });
+    it("transforms short castling correctly", () => {
+      const input = { pvs: [{ moves: "e1h1" }] };
+      const output = lichess2fenData(input);
+      expect(output.bestMove).toBe("O-O");
+    });
+    it("transforms long castling for black", () => {
+      const input = { pvs: [{ moves: "e8a8" }] };
+      const output = lichess2fenData(input);
+      expect(output.bestMove).toBe("O-O-O");
+    });
     it("move cp to the top level property", () => {
       const data = lichess2fenData(input);
       expect(data.cp).toBe(27);

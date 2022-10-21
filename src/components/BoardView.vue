@@ -122,6 +122,7 @@ function onDrop(source, target) {
   // illegal move
   if (move === null) return "snapback";
 
+  updateFen();
   updateMoveInfo();
   updatePgn();
 }

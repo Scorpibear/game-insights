@@ -9,11 +9,14 @@ export const pgn2moves = (pgn) =>
 
 export function lichess2fenData(input) {
   const result = { depth: input.depth };
-  const chess = new Chess(input.fen);
   if (input.pvs && input.pvs.length && input.pvs[0].moves) {
-    const move = input.pvs[0].moves.split(" ")[0];
-    const moveObject = chess.move(move, { sloppy: true });
-    result.bestMove = moveObject?.san;
+    const moveData = input.pvs[0].moves.split(" ")[0];
+    const castling = { e1h1: "O-O", e8h8: "O-O", e1a1: "O-O-O", e8a8: "O-O-O" };
+    result.bestMove =
+      castling[moveData] ||
+      new Chess(input.fen).move(moveData, {
+        sloppy: true,
+      })?.san;
     result.cp = input.pvs[0].cp;
   }
   return result;
