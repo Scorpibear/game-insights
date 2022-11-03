@@ -13,7 +13,7 @@ function add() {
 }
 
 function remove(item) {
-  let altMoves = props.data?.alt || [];
+  let altMoves = props.data.alt;
   const i = altMoves.indexOf(item);
   if (i > -1) {
     altMoves.splice(i, 1);
