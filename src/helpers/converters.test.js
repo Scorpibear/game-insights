@@ -119,6 +119,12 @@ describe("converters", () => {
         depth: 50,
       });
     });
+    it("uses alt as is", () => {
+      expect(formatBest({ bestMove: "e4", alt: ["d4"] })).toEqual({
+        san: "e4",
+        alt: ["d4"],
+      });
+    });
     it("null in, null out", () => {
       expect(formatBest(null)).toBeNull();
     });

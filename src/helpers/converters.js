@@ -61,8 +61,14 @@ export const formatBest = (data) =>
   data && data.bestMove
     ? {
         san: data.bestMove,
-        score: data.score !== undefined ? data.score : data.cp / 100,
+        score:
+          data.score !== undefined
+            ? data.score
+            : data.cp
+            ? data.cp / 100
+            : undefined,
         depth: data.depth,
+        alt: data.alt,
       }
     : null;
 

@@ -6,6 +6,7 @@ import { Chess } from "chess.js";
 import { BackendCached } from "../helpers/backend-cached";
 import { pgn2moves, formatPopular, formatBest } from "../helpers/converters";
 import boardHelper from "../helpers/board-helper";
+import GoodMovesView from "./GoodMovesView.vue";
 
 // constants
 
@@ -182,10 +183,10 @@ function reset() {
 function showNextMove(moves, plyNumber) {
   if (plyNumber < moves.length && plyNumber < maxReplayPlies) {
     setTimeout(async () => {
-      const bestMoveSan = bestMove.value?.san;
+      const allGood = (bestMove.value?.alt || []).concat(bestMove.value?.san);
       let move = chess.move(moves[plyNumber]);
       await updateBoard();
-      if (move.san != bestMoveSan && isOurMove(move)) {
+      if (isOurMove(move) && !allGood.includes(move.san)) {
         // to have a chance see the wrong move made before reverting back
         setTimeout(async () => {
           chess.undo();
@@ -223,6 +224,11 @@ function goNext() {
   }
 }
 
+function updateAltMoves(altMoves) {
+  bestMove.value.alt = altMoves;
+  backend.updateAltMoves(fen.value, altMoves);
+}
+
 // lifecycle hooks
 
 onMounted(() => {
@@ -249,16 +255,7 @@ onMounted(() => {
   </div>
   <div :id="boardID" class="chess-board">Loading...</div>
   <div class="stats">
-    <div class="best-move-info">
-      Best:
-      <span v-if="bestMove" id="best-move-data">
-        {{ bestMove.san }}, score: {{ bestMove.score }}, depth:
-        {{ bestMove.depth }}
-      </span>
-      <span v-else>
-        {{ bestMove === undefined ? "searching..." : "no data" }}
-      </span>
-    </div>
+    <GoodMovesView :data="bestMove" @update-alt="updateAltMoves" />
     <div class="popular-move-info">
       <span>Popular: </span>
       <span

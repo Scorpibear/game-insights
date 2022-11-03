@@ -6,6 +6,7 @@ describe("backendCached", () => {
   let backend = {
     analyze: () => {},
     getPopularMoves: () => Promise.resolve([{}]),
+    updateAltMoves: () => {},
   };
   let cached = new BackendCached(backend);
   let fen = "some test fen";
@@ -43,5 +44,12 @@ describe("backendCached", () => {
     });
     it("calls backend when cache is expired");
     it("uses cache when it presented");
+  });
+  describe("updateAltMoves", () => {
+    it("calles backend as is", () => {
+      vi.spyOn(backend, "updateAltMoves");
+      cached.updateAltMoves("fen", ["c4"]);
+      expect(backend.updateAltMoves).toHaveBeenCalledWith("fen", ["c4"]);
+    });
   });
 });

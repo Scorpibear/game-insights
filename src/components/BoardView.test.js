@@ -18,16 +18,6 @@ describe("BoardView", () => {
 
     getByText("Popular:");
   });
-  it("displays bestMove", () => {
-    const { getByText } = render(BoardView, {
-      props: {
-        game: { pgn: "1. e4 e5" },
-        username: "testuser",
-        bestMove: { san: "h3", score: "0.59", depth: 46 },
-      },
-    });
-    getByText("h3, score: 0.59, depth: 46");
-  });
   it("displays popular moves", () => {
     const { getByText } = render(BoardView, {
       props: {
