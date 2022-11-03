@@ -54,10 +54,8 @@ export default class BestMoveCache {
   }
   async updateAltMoves(fen, altMoves) {
     const fenBase = await this.fenBaseAsPromised;
-    console.log("fenBase: ", fenBase);
     let fenData = fenBase.get(fen) || {};
     fenData.alt = altMoves;
-    console.log("new fendata: ", fenData);
     fenBase.set(fen, fenData);
     this.fenBaseAsPromised = Promise.resolve(this.saveBase(fenBase));
   }
