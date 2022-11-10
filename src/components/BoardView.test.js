@@ -1,9 +1,15 @@
-import { render } from "@testing-library/vue";
-import { describe, it, expect } from "vitest";
+import { render, fireEvent } from "@testing-library/vue";
+import { describe, it, expect, vi } from "vitest";
 
 // mocks to make Chessboard work
 window.$ = () => {};
 window.Chessboard = () => ({ orientation: () => {}, position: () => {} });
+
+const backend = {
+  updateAltMoves: () => {},
+  getBestMove: () => Promise.resolve({ bestMove: "e4" }),
+  getPopularMoves: () => Promise.resolve([]),
+};
 
 import BoardView from "./BoardView.vue";
 
@@ -13,6 +19,7 @@ describe("BoardView", () => {
       props: {
         game: { pgn: "1.e4" },
         username: "testuser",
+        backend,
       },
     });
 
@@ -27,6 +34,7 @@ describe("BoardView", () => {
           { san: "Be3", masterGamesAmount: 35000, onlineGamesAmount: 323000 },
           { san: "Bg5", masterGamesAmount: 22000, onlineGamesAmount: 485000 },
         ],
+        backend,
       },
     });
     getByText("Be3 (35K+323K), Bg5 (22K+485K)");
@@ -37,8 +45,25 @@ describe("BoardView", () => {
         game: { pgn: "1. e4 e5" },
         username: "testuser",
         bestMove: null,
+        backend,
       },
     });
     expect(getAllByText("no data").length).toBe(2);
+  });
+  it("calls backend.updateAltMoves when alt move is added", async () => {
+    vi.spyOn(global, "prompt").mockReturnValue("c4");
+    vi.spyOn(backend, "updateAltMoves");
+
+    const { getByRole } = render(BoardView, {
+      props: {
+        backend,
+        game: { pgn: "1. e4 e5" },
+        username: "testuser",
+      },
+    });
+    const button = getByRole("button", { name: "+" });
+    await fireEvent.click(button);
+
+    expect(backend.updateAltMoves).toHaveBeenCalled();
   });
 });

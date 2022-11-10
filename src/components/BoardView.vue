@@ -3,7 +3,6 @@
 
 import { onMounted, ref } from "vue";
 import { Chess } from "chess.js";
-import { BackendCached } from "../helpers/backend-cached";
 import { pgn2moves, formatPopular, formatBest } from "../helpers/converters";
 import boardHelper from "../helpers/board-helper";
 import GoodMovesView from "./GoodMovesView.vue";
@@ -18,7 +17,7 @@ const boardID = "chessBoard" + Math.round(Math.random() * 1000000);
 
 // variables
 
-let board, $board, chess;
+let board, $board, chess, backend;
 
 const boardConfig = {
   draggable: true,
@@ -31,10 +30,6 @@ const boardConfig = {
   onSnapEnd,
   pieceTheme: "/img/chesspieces/wikipedia/{piece}.png",
 };
-
-// class instances
-
-const backend = BackendCached.getShared();
 
 // vue.js definitions
 
@@ -52,7 +47,9 @@ const props = defineProps({
   },
   bestMove: {
     type: Object,
-    default: null,
+    default() {
+      return {};
+    },
     required: false,
   },
   popularMoves: {
@@ -61,6 +58,10 @@ const props = defineProps({
       return [];
     },
     required: false,
+  },
+  backend: {
+    type: Object,
+    required: true,
   },
 });
 
@@ -75,7 +76,7 @@ const openingInfo = ref({});
 
 // methods
 
-const isOurMove = (moveData) => board.orientation().startsWith(moveData.color);
+const isOurMove = (moveData) => board.orientation().startsWith(moveData?.color);
 
 function highlightMove(aMove, type) {
   if (!$board) {
@@ -225,6 +226,7 @@ function goNext() {
 }
 
 function updateAltMoves(altMoves) {
+  if (!bestMove.value) bestMove.value = {};
   bestMove.value.alt = altMoves;
   backend.updateAltMoves(fen.value, altMoves);
 }
@@ -232,6 +234,7 @@ function updateAltMoves(altMoves) {
 // lifecycle hooks
 
 onMounted(() => {
+  backend = props.backend;
   pgn.value = props.game.pgn;
   board = window.Chessboard(boardID, boardConfig);
   $board = window.$(`#${boardID}`);
