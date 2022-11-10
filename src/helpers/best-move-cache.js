@@ -38,12 +38,12 @@ export default class BestMoveCache {
   }
   async getFenData(fen) {
     const fenBase = await this.fenBaseAsPromised;
-    let fenData = fenBase.get(fen);
+    let fenData = fenBase.get(fen) || {};
     if (!fenData?.bestMove || Date.now() - fenData.updated > fourHours) {
       try {
         fenData = await this.cloudClient.getFenData(fen);
       } catch (err) {
-        fenData = {}; // no data in cloud - not an issue as it rejects with 404 for all unknown fens
+        // no data in cloud - not an issue as it rejects with 404 for all unknown fens
       }
       fenData.updated = Date.now();
       fenBase.set(fen, fenData);
@@ -51,5 +51,12 @@ export default class BestMoveCache {
       this.saveBase(fenBase);
     }
     return Promise.resolve(fenData);
+  }
+  async updateAltMoves(fen, altMoves) {
+    const fenBase = await this.fenBaseAsPromised;
+    let fenData = fenBase.get(fen) || {};
+    fenData.alt = altMoves;
+    fenBase.set(fen, fenData);
+    this.fenBaseAsPromised = Promise.resolve(this.saveBase(fenBase));
   }
 }

@@ -117,4 +117,15 @@ describe("backend", () => {
       expect(cheClient.analyze).toHaveBeenCalledWith(["d4", "Nf6"]);
     });
   });
+  describe("updateAltMoves", () => {
+    it("calls bestMoveCache as is", () => {
+      spyOn(backend.bestMoveCache, "updateAltMoves").mockImplementation(
+        () => {}
+      );
+      backend.updateAltMoves("fen", ["d4"]);
+      expect(backend.bestMoveCache.updateAltMoves).toHaveBeenCalledWith("fen", [
+        "d4",
+      ]);
+    });
+  });
 });

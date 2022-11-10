@@ -4,6 +4,8 @@ import { reactive } from "vue";
 import HeaderView from "./components/HeaderView.vue";
 import BoardView from "./components/BoardView.vue";
 
+import { BackendCached } from "./helpers/backend-cached";
+
 const state = reactive({
   username: "",
   games: [
@@ -17,6 +19,8 @@ const state = reactive({
     { pgn: "1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 ?-?" },
   ],
 });
+
+const backend = BackendCached.getShared();
 </script>
 
 <template>
@@ -29,7 +33,7 @@ const state = reactive({
     "
   />
   <div v-for="game in state.games" :key="game" class="game-view">
-    <BoardView :game="game" :username="state.username" />
+    <BoardView :game="game" :username="state.username" :backend="backend" />
   </div>
 </template>
 

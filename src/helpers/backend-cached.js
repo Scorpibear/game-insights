@@ -50,4 +50,7 @@ export class BackendCached {
     }
     return result;
   }
+  updateAltMoves(fen, altMoves) {
+    this.backend.updateAltMoves(fen, altMoves);
+  }
 }

@@ -44,4 +44,7 @@ export class Backend {
     }
     return jointData;
   }
+  updateAltMoves(fen, altMoves) {
+    this.bestMoveCache.updateAltMoves(fen, altMoves);
+  }
 }
