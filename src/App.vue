@@ -25,6 +25,7 @@ const backend = BackendCached.getShared();
 
 <template>
   <HeaderView
+    :backend="backend"
     @games-loaded="
       (games, username) => {
         state.games = games;

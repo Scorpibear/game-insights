@@ -53,4 +53,7 @@ export class BackendCached {
   updateAltMoves(fen, altMoves) {
     this.backend.updateAltMoves(fen, altMoves);
   }
+  async getGames(userID, gamesToLoad) {
+    return this.backend.getGames(userID, gamesToLoad);
+  }
 }
