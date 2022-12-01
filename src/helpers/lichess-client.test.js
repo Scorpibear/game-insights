@@ -1,4 +1,3 @@
-import { EventEmitter } from "node-cache";
 import { describe, expect, it, vi } from "vitest";
 import { LichessClient } from "./lichess-client";
 
