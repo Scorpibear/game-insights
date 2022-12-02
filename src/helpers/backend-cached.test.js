@@ -5,6 +5,8 @@ const spyOn = vi.spyOn;
 describe("backendCached", () => {
   let backend = {
     analyze: () => {},
+    getBestMove: () => Promise.resolve({}),
+    getGames: () => Promise.resolve([{}]),
     getPopularMoves: () => Promise.resolve([{}]),
     updateAltMoves: () => {},
   };
@@ -36,6 +38,13 @@ describe("backendCached", () => {
       }
     });
   });
+  describe("getBestMove", () => {
+    it("returns result from backend", async () => {
+      const bestMoveData = {bestMove: "Nf3", cp: 23, depth: 75};
+      vi.spyOn(backend, "getBestMove").mockResolvedValue(bestMoveData);
+      expect(await cached.getBestMove("some valid fen")).toBe(bestMoveData);
+    });
+  });
   describe("getPopularMoves", () => {
     it("calls backend when cache is empty", () => {
       spyOn(backend, "getPopularMoves");
@@ -52,4 +61,11 @@ describe("backendCached", () => {
       expect(backend.updateAltMoves).toHaveBeenCalledWith("fen", ["c4"]);
     });
   });
+  describe("getGames", () => {
+    it("returns result from backend", async () => {
+      const games = [{pgn: "1.e4 c5"}, {pgn: "1.d4 Nf6"}];
+      vi.spyOn(backend, "getGames").mockResolvedValue(games);
+      expect(await cached.getGames("testuser", 2)).toBe(games);
+    })
+  })
 });
