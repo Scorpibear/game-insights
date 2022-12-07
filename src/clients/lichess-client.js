@@ -1,4 +1,4 @@
-import { readStream } from "./stream-reader";
+import { readStream } from "../helpers/stream-reader";
 
 export class LichessClient {
   async getTheMostPopularByMasters(fen) {
