@@ -1,6 +1,6 @@
 import { Backend } from "./backend";
 import HistoryLocal from "./history-local";
-import { fourDays, fourWeeks } from "./constants";
+import { fourDays, fourMonths } from "./constants";
 
 const plyLimit = 50;
 
@@ -13,7 +13,7 @@ export class BackendCached {
       name: "analyzeCache",
     });
     this.popularCache = new HistoryLocal({
-      ttl: fourWeeks,
+      ttl: fourMonths,
       name: "popularCache",
     });
   }
