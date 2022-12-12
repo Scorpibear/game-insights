@@ -1,5 +1,5 @@
-import { CheguraClient } from "./chegura-client";
-import { LichessClient } from "./lichess-client";
+import { CheguraClient } from "../clients/chegura-client";
+import { LichessClient } from "../clients/lichess-client";
 import { lichess2fenData, mergeGameStats } from "./converters";
 import BestMoveCache from "./best-move-cache";
 
