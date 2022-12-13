@@ -62,9 +62,9 @@ export const formatBest = (data) =>
     ? {
         san: data.bestMove,
         score:
-          data.score !== undefined
+          'score' in data
             ? data.score
-            : data.cp
+            : 'cp' in data
             ? data.cp / 100
             : undefined,
         depth: data.depth,

@@ -112,6 +112,20 @@ describe("converters", () => {
         depth: 50,
       });
     });
+    it("uses cp if score is missed and cp is zero", () => {
+      expect(formatBest({ bestMove: "Nf3", cp: 0, depth: 50 })).toEqual({
+        san: "Nf3",
+        score: 0,
+        depth: 50,
+      });
+    });
+    it("uses score as is if it is zero", () => {
+      expect(formatBest({ bestMove: "Nf3", score: 0, depth: 50 })).toEqual({
+        san: "Nf3",
+        score: 0,
+        depth: 50,
+      });
+    });
     it("uses score as is if present", () => {
       expect(formatBest({ bestMove: "Nf3", score: 0.12, depth: 50 })).toEqual({
         san: "Nf3",
