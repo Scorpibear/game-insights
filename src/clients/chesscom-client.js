@@ -1,5 +1,3 @@
-import { readStream } from "../helpers/stream-reader";
-
 export class ChesscomClient {
   async getGamesArchives(username) {
     const url = `https://api.chess.com/pub/player/${username}/games/archives`;

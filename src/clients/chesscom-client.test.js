@@ -11,8 +11,8 @@ describe("chess.com client", () => {
   const g1 = { pgn: "1. e4 c5 2. Nf3" },
     g2 = { pgn: "1. d4 Nf6 2. Nf3" },
     g3 = { pgn: "1. Nf3 Nf6 2. g3" },
-    g4 = { pgn: "1. c4 c5 2. Nc3" },
-    g5 = { pgn: "1. g3 d5 2. Nf3" };
+    g4 = { pgn: "1. c4 c5 2. Nc3" };
+
   beforeAll(() => {
     chesscomClient = new ChesscomClient();
   });
