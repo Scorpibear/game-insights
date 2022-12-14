@@ -54,4 +54,7 @@ export class LichessClient {
       stream.then(readStream(onMessage)).then(onComplete).catch(reject);
     });
   }
+  async getLastGames(userId, gamesToLoad) {
+    return this.getGames(userId, gamesToLoad);
+  }
 }
