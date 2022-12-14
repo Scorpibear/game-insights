@@ -15,24 +15,28 @@ export class ChesscomClient {
   }
   async getGamesForMonth(username, year, month) {
     const url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
-    return new Promise((resolve, reject) => {
-      try {
-        const stream = fetch(url, {
-          headers: { Accept: "application/x-ndjson" },
-        });
-        const games = [];
-        const onMessage = (game) => {
-          games.push(game);
-        };
-        const onComplete = () => {
-          resolve(games);
-        };
-        stream.then(readStream(onMessage)).then(onComplete).catch(reject);
-      } catch (err) {
-        reject(
-          `could not get games archives for user '${username}', year '${year}', month '${month}' : ${err}`
-        );
+    return this.getGamesByUrl(url);
+  }
+  async getGamesByUrl(url) {
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      return data.games;
+    } catch (err) {
+      return Promise.reject(
+        `could not get games archives for '${url}' : ${err}`
+      );
+    }
+  }
+  async getLastGames(username, amount) {
+    const archives = await this.getGamesArchives(username);
+    const games = [];
+    while (games.length < amount && archives.length > 0) {
+      const lastGames = await this.getGamesByUrl(archives.pop());
+      while (games.length < amount && lastGames.length > 0) {
+        games.push(lastGames.pop());
       }
-    });
+    }
+    return games.reverse();
   }
 }
