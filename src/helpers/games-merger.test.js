@@ -6,26 +6,39 @@ const spyOn = vi.spyOn;
 describe("GamesMerger", () => {
   const ccClient = { getLastGames: () => Promise.resolve([]) };
   const liClient = { getLastGames: () => Promise.resolve([]) };
-  const g1 = { pgn: "1. e4 c6" },
-    g2 = { pgn: "1. d4 Nf6" },
-    g3 = { pgn: "1. c4 Nf6" },
-    g4 = { pgn: "1.Nf6 d5" };
+  const ccg1 = { testid: "pre-last", pgn: "1. e4 c6", endTime: 1670877300 }, // #3
+    ccg2 = { testid: "second", pgn: "1. d4 Nf6", endTime: 1670877200 }, // #2
+    lig1 = { testid: "last", pgn: "1. c4 Nf6", lastMoveAt: 1670877400000 }, // #4
+    lig2 = { testid: "first", pgn: "1. Nf6 d5", lastMoveAt: 1670877100000 }; // #1
   let merger;
   beforeAll(() => {
     merger = new GamesMerger({
       chessComClient: ccClient,
       lichessClient: liClient,
+      chessComID: "testuser",
+      lichessID: "testuser",
     });
   });
   describe("getLastGames", () => {
     it("joins games from lichess and chess.com", async () => {
-      spyOn(ccClient, "getLastGames").mockResolvedValue([g1, g2]);
-      spyOn(liClient, "getLastGames").mockResolvedValue([g3, g4]);
+      spyOn(ccClient, "getLastGames").mockResolvedValue([ccg1, ccg2]);
+      spyOn(liClient, "getLastGames").mockResolvedValue([lig1, lig2]);
       await merger.getLastGames(3);
       expect(ccClient.getLastGames).toHaveBeenCalled();
       expect(liClient.getLastGames).toHaveBeenCalled();
     });
-    it("limits number of games");
-    it("cuts off the oldest");
+    it("limits number of games", async () => {
+      spyOn(ccClient, "getLastGames").mockResolvedValue([ccg1, ccg2]);
+      spyOn(liClient, "getLastGames").mockResolvedValue([lig1, lig2]);
+      const games = await merger.getLastGames(3);
+      expect(games.length).toBe(3);
+    });
+    it("returns the most recent", async () => {
+      spyOn(ccClient, "getLastGames").mockResolvedValue([ccg1, ccg2]);
+      spyOn(liClient, "getLastGames").mockResolvedValue([lig1, lig2]);
+      const games = await merger.getLastGames(2);
+      expect(games[0].testid).toBe("last");
+      expect(games[1].testid).toBe("pre-last");
+    });
   });
 });
