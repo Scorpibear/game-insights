@@ -21,9 +21,7 @@ export class ChesscomClient {
       const data = await response.json();
       return data.games;
     } catch (err) {
-      return Promise.reject(
-        `could not get games archives for '${url}' : ${err}`
-      );
+      return Promise.reject(`could not get games for '${url}': ${err}`);
     }
   }
   async getLastGames(username, amount) {

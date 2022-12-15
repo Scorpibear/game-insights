@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { ChesscomClient } from "./chesscom-client";
 
 const spyOn = vi.spyOn;
@@ -24,6 +24,19 @@ describe("chess.com client", () => {
         "https://api.chess.com/pub/player/testuser/games/archives"
       );
     });
+    it("rejects promise if fetch fails", async () => {
+      vi.spyOn(global, "fetch").mockImplementationOnce(() =>
+        Promise.reject("page not found")
+      );
+      let passed;
+      try {
+        await chesscomClient.getGamesArchives("unknown user");
+        passed = true;
+      } catch (err) {
+        passed = false;
+      }
+      expect(passed).toBeFalsy();
+    });
   });
   describe("getGamesForMonth", () => {
     it("fetch https://api.chess.com/pub/player/${username}/games/${year}/${month}", async () => {
@@ -35,16 +48,19 @@ describe("chess.com client", () => {
     });
   });
   describe("getLastGames", () => {
+    let mocks = [];
     it("get the last 3 games from the last month when they are present", async () => {
       spyOn(chesscomClient, "getGamesArchives").mockResolvedValue([
         "https://api.chess.com/pub/player/testuser/games/2022/11",
       ]);
-      spyOn(chesscomClient, "getGamesByUrl").mockResolvedValue([
-        g1,
-        g2,
-        g3,
-        g4,
-      ]);
+      mocks.push(
+        spyOn(chesscomClient, "getGamesByUrl").mockResolvedValue([
+          g1,
+          g2,
+          g3,
+          g4,
+        ])
+      );
       const games = await chesscomClient.getLastGames("testuser", 3);
       expect(games).toEqual([g2, g3, g4]);
     });
@@ -53,13 +69,35 @@ describe("chess.com client", () => {
         "https://api.chess.com/pub/player/testuser/games/2022/10",
         "https://api.chess.com/pub/player/testuser/games/2022/11",
       ]);
-      spyOn(chesscomClient, "getGamesByUrl").mockImplementation((url) =>
-        url.includes("2022/10")
-          ? Promise.resolve([g1, g2])
-          : Promise.resolve([g3, g4])
+      mocks.push(
+        spyOn(chesscomClient, "getGamesByUrl").mockImplementation((url) =>
+          url.includes("2022/10")
+            ? Promise.resolve([g1, g2])
+            : Promise.resolve([g3, g4])
+        )
       );
       const games = await chesscomClient.getLastGames("testuser", 3);
       expect(games).toEqual([g2, g3, g4]);
+    });
+    afterEach(() => {
+      mocks.forEach((mock) => mock.restore());
+    });
+  });
+  describe("getGamesByUrl", () => {
+    it("rejects with the incorrect url data", async () => {
+      spyOn(global, "fetch").mockImplementationOnce(() =>
+        Promise.reject("page not found")
+      );
+      let passed = false;
+      try {
+        await chesscomClient.getGamesByUrl("https://strange.url/asdf");
+        passed = true;
+      } catch (err) {
+        expect(err).toEqual(
+          "could not get games for 'https://strange.url/asdf': page not found"
+        );
+      }
+      expect(passed).toBeFalsy();
     });
   });
 });
