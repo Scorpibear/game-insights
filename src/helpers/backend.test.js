@@ -22,10 +22,9 @@ describe("backend", () => {
     it("creates chegura instance if not specified", () => {
       let backend = new Backend();
       expect(backend.cheguraClient).toBeDefined();
-    })
-  })
+    });
+  });
   describe("methods", () => {
-
     beforeAll(() => {
       backend = new Backend(cheClient, liClient);
     });
@@ -127,20 +126,23 @@ describe("backend", () => {
     });
     describe("getGames", () => {
       it("get games from lichess", async () => {
-        const games = [{pgn: "1.e4 c5"}, {pgn: "1.d4 Nf6"}];
+        const games = [{ pgn: "1.e4 c5" }, { pgn: "1.d4 Nf6" }];
         vi.spyOn(liClient, "getGames").mockResolvedValue(games);
-        expect(await backend.getGames("testuser", 2)).toBe(games);
-      })
-    })
+        expect(await backend.getGames({ lichessUsername: "testuser" }, 2)).toBe(
+          games
+        );
+      });
+    });
     describe("updateAltMoves", () => {
       it("calls bestMoveCache as is", () => {
         spyOn(backend.bestMoveCache, "updateAltMoves").mockImplementation(
           () => {}
         );
         backend.updateAltMoves("fen", ["d4"]);
-        expect(backend.bestMoveCache.updateAltMoves).toHaveBeenCalledWith("fen", [
-          "d4",
-        ]);
+        expect(backend.bestMoveCache.updateAltMoves).toHaveBeenCalledWith(
+          "fen",
+          ["d4"]
+        );
       });
     });
   });

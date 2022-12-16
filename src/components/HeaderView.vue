@@ -5,6 +5,7 @@ import { ref, onMounted } from "vue";
 
 // variables & constants
 
+const chesscomUsernameKey = "profile.chesscom.username";
 const lichessUsernameKey = "profile.lichess.username";
 const gamesToLoad = 5;
 let backend;
@@ -18,16 +19,25 @@ const props = defineProps({
   },
 });
 
-const username = ref(localStorage.getItem(lichessUsernameKey) || "");
+const ccUsername = ref(localStorage.getItem(chesscomUsernameKey) || "");
+const liUsername = ref(localStorage.getItem(lichessUsernameKey) || "");
 
 const emit = defineEmits(["gamesLoaded"]);
 
 // methods
 
 async function getInsights() {
-  localStorage.setItem(lichessUsernameKey, username.value);
-  const games = await backend.getGames(username.value, gamesToLoad);
-  emit("gamesLoaded", games, username.value);
+  localStorage.setItem(chesscomUsernameKey, ccUsername.value);
+  localStorage.setItem(lichessUsernameKey, liUsername.value);
+  const games = await backend.getGames(
+    { chesscomUsername: ccUsername.value, lichessUsername: liUsername.value },
+    gamesToLoad
+  );
+  emit("gamesLoaded", {
+    games,
+    chesscomUsername: ccUsername.value,
+    lichessUsername: liUsername.value,
+  });
 }
 
 // lifecycle hooks
@@ -40,12 +50,23 @@ onMounted(() => {
 <template>
   <h4 class="input">
     <label>Game insights for: </label>
-    <input
-      id="username"
-      v-model="username"
-      type="text"
-      title="lichess username"
-    />
+    <label
+      >chess.com
+      <input
+        v-model="ccUsername"
+        class="username"
+        type="text"
+        title="chess.com username"
+      />
+    </label>
+    <label
+      >lichess
+      <input
+        v-model="liUsername"
+        class="username"
+        type="text"
+        title="lichess.org username"
+    /></label>
     <button @click="getInsights">Get!</button>
   </h4>
 </template>
@@ -58,8 +79,8 @@ onMounted(() => {
 label {
   margin-right: 5pt;
 }
-#username {
-  max-width: 120pt;
+.username {
+  max-width: 80pt;
   margin: 0px;
 }
 </style>

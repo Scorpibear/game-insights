@@ -47,7 +47,7 @@ export class Backend {
   updateAltMoves(fen, altMoves) {
     this.bestMoveCache.updateAltMoves(fen, altMoves);
   }
-  async getGames(userID, gamesToLoad) {
-    return this.lichessClient.getGames(userID, gamesToLoad);
+  async getGames(userData, gamesToLoad) {
+    return this.lichessClient.getGames(userData.lichessUsername, gamesToLoad);
   }
 }
