@@ -15,9 +15,12 @@ export class GamesMerger {
     const games = chessComGames
       .concat(lichessGames)
       .map((game) =>
-        "endTime" in game ? { ...game, lastMoveAt: game.endTime * 1000 } : game
+        "end_time" in game
+          ? { ...game, lastMoveAt: game.end_time * 1000 }
+          : game
       ) // transform endTime property of chess.com format to lastMoveAt of lichess.org
       .sort((g1, g2) => g2.lastMoveAt - g1.lastMoveAt); // the recent first
+    console.log(games);
     const lastGames = games.slice(0, amount);
     return lastGames;
   }
