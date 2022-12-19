@@ -1,17 +1,15 @@
 export class GamesMerger {
-  constructor({ chessComClient, lichessClient, chessComID, lichessID }) {
+  constructor({ chessComClient, lichessClient }) {
     this.chessComClient = chessComClient;
     this.lichessClient = lichessClient;
-    this.chessComID = chessComID;
-    this.lichessID = lichessID;
   }
-  async getLastGames(amount) {
+  async getLastGames(userData, amount) {
     const chessComGames = await this.chessComClient.getLastGames(
-      this.chessComID,
+      userData.chessComUsername,
       amount
     );
     const lichessGames = await this.lichessClient.getLastGames(
-      this.lichessID,
+      userData.lichessUsername,
       amount
     );
     const games = chessComGames

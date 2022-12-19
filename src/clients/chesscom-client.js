@@ -1,4 +1,4 @@
-export class ChesscomClient {
+export class ChessComClient {
   async getGamesArchives(username) {
     const url = `https://api.chess.com/pub/player/${username}/games/archives`;
     try {

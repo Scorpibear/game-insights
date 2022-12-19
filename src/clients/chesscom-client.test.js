@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { ChesscomClient } from "./chesscom-client";
+import { ChessComClient } from "./chesscom-client";
 
 const spyOn = vi.spyOn;
 
@@ -14,7 +14,7 @@ describe("chess.com client", () => {
     g4 = { pgn: "1. c4 c5 2. Nc3" };
 
   beforeAll(() => {
-    chesscomClient = new ChesscomClient();
+    chesscomClient = new ChessComClient();
   });
   describe("getGamesArchives", () => {
     it("fetch https://api.chess.com/pub/player/${username}/games/archives", async () => {

@@ -10,9 +10,9 @@ describe("backend", () => {
     getFenData: () => Promise.resolve({ bestMove: "Nf3" }),
     analyze: () => Promise.resolve(),
   };
+  let chessComClient = {};
   let liClient = {
     getCloudEval: () => Promise.resolve({ bestMove: "d4" }),
-    getGames: () => Promise.resolved([{}]),
     getTheMostPopularByMasters: () => Promise.resolve({}),
     getTheMostPopularOnline: () => Promise.resolve({}),
   };
@@ -26,7 +26,7 @@ describe("backend", () => {
   });
   describe("methods", () => {
     beforeAll(() => {
-      backend = new Backend(cheClient, liClient);
+      backend = new Backend(cheClient, chessComClient, liClient);
     });
 
     describe("getPopularMoves", () => {
@@ -125,12 +125,14 @@ describe("backend", () => {
       });
     });
     describe("getGames", () => {
-      it("get games from lichess", async () => {
+      it("uses games merger to get last games", async () => {
         const games = [{ pgn: "1.e4 c5" }, { pgn: "1.d4 Nf6" }];
-        vi.spyOn(liClient, "getGames").mockResolvedValue(games);
-        expect(await backend.getGames({ lichessUsername: "testuser" }, 2)).toBe(
-          games
-        );
+        const userData = {
+          chesscomUsername: "testuser",
+          lichessUsername: "testuser",
+        };
+        vi.spyOn(backend.gamesMerger, "getLastGames").mockResolvedValue(games);
+        expect(await backend.getGames(userData, 2)).toBe(games);
       });
     });
     describe("updateAltMoves", () => {

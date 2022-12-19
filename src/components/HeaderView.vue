@@ -5,7 +5,7 @@ import { ref, onMounted } from "vue";
 
 // variables & constants
 
-const chesscomUsernameKey = "profile.chesscom.username";
+const chessComUsernameKey = "profile.chesscom.username";
 const lichessUsernameKey = "profile.lichess.username";
 const gamesToLoad = 5;
 let backend;
@@ -19,7 +19,7 @@ const props = defineProps({
   },
 });
 
-const ccUsername = ref(localStorage.getItem(chesscomUsernameKey) || "");
+const ccUsername = ref(localStorage.getItem(chessComUsernameKey) || "");
 const liUsername = ref(localStorage.getItem(lichessUsernameKey) || "");
 
 const emit = defineEmits(["gamesLoaded"]);
@@ -27,15 +27,15 @@ const emit = defineEmits(["gamesLoaded"]);
 // methods
 
 async function getInsights() {
-  localStorage.setItem(chesscomUsernameKey, ccUsername.value);
+  localStorage.setItem(chessComUsernameKey, ccUsername.value);
   localStorage.setItem(lichessUsernameKey, liUsername.value);
   const games = await backend.getGames(
-    { chesscomUsername: ccUsername.value, lichessUsername: liUsername.value },
+    { chessComUsername: ccUsername.value, lichessUsername: liUsername.value },
     gamesToLoad
   );
   emit("gamesLoaded", {
     games,
-    chesscomUsername: ccUsername.value,
+    chessComUsername: ccUsername.value,
     lichessUsername: liUsername.value,
   });
 }

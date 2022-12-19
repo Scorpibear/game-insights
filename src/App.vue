@@ -27,9 +27,9 @@ const backend = BackendCached.getShared();
   <HeaderView
     :backend="backend"
     @games-loaded="
-      ({ games, chesscomUsername, lichessUsername }) => {
+      ({ games, chessComUsername, lichessUsername }) => {
         state.games = games;
-        state.userData = { chesscomUsername, lichessUsername };
+        state.userData = { chessComUsername, lichessUsername };
       }
     "
   />
