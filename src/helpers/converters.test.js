@@ -27,6 +27,15 @@ describe("converters", () => {
     it("works for empty pgn", () => {
       expect(pgn2moves("")).toEqual([]);
     });
+    it("works for chess.com annotations", () => {
+      const pgn = `
+        [Site "Chess.com"]
+
+        1. e4 {[%clk 0:03:00.9]} 1... c5 {[%clk 0:02:59.3]} 2. c3 {[%clk 0:03:01.2]} 2... d5 {[%clk 0:02:56]} 3. exd5 {[%clk 0:00:22.2]} 0-1
+      `;
+      const moves = pgn2moves(pgn);
+      expect(moves).toEqual(["e4", "c5", "c3", "d5", "exd5"]);
+    });
   });
   describe("lichess2fenData", () => {
     const input = {
