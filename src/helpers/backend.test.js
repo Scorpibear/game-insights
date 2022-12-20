@@ -10,9 +10,9 @@ describe("backend", () => {
     getFenData: () => Promise.resolve({ bestMove: "Nf3" }),
     analyze: () => Promise.resolve(),
   };
+  let chessComClient = {};
   let liClient = {
     getCloudEval: () => Promise.resolve({ bestMove: "d4" }),
-    getGames: () => Promise.resolved([{}]),
     getTheMostPopularByMasters: () => Promise.resolve({}),
     getTheMostPopularOnline: () => Promise.resolve({}),
   };
@@ -22,12 +22,11 @@ describe("backend", () => {
     it("creates chegura instance if not specified", () => {
       let backend = new Backend();
       expect(backend.cheguraClient).toBeDefined();
-    })
-  })
+    });
+  });
   describe("methods", () => {
-
     beforeAll(() => {
-      backend = new Backend(cheClient, liClient);
+      backend = new Backend(cheClient, chessComClient, liClient);
     });
 
     describe("getPopularMoves", () => {
@@ -126,21 +125,26 @@ describe("backend", () => {
       });
     });
     describe("getGames", () => {
-      it("get games from lichess", async () => {
-        const games = [{pgn: "1.e4 c5"}, {pgn: "1.d4 Nf6"}];
-        vi.spyOn(liClient, "getGames").mockResolvedValue(games);
-        expect(await backend.getGames("testuser", 2)).toBe(games);
-      })
-    })
+      it("uses games merger to get last games", async () => {
+        const games = [{ pgn: "1.e4 c5" }, { pgn: "1.d4 Nf6" }];
+        const userData = {
+          chesscomUsername: "testuser",
+          lichessUsername: "testuser",
+        };
+        vi.spyOn(backend.gamesMerger, "getLastGames").mockResolvedValue(games);
+        expect(await backend.getGames(userData, 2)).toBe(games);
+      });
+    });
     describe("updateAltMoves", () => {
       it("calls bestMoveCache as is", () => {
         spyOn(backend.bestMoveCache, "updateAltMoves").mockImplementation(
           () => {}
         );
         backend.updateAltMoves("fen", ["d4"]);
-        expect(backend.bestMoveCache.updateAltMoves).toHaveBeenCalledWith("fen", [
-          "d4",
-        ]);
+        expect(backend.bestMoveCache.updateAltMoves).toHaveBeenCalledWith(
+          "fen",
+          ["d4"]
+        );
       });
     });
   });

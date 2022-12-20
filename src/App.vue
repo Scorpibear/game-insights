@@ -7,7 +7,6 @@ import BoardView from "./components/BoardView.vue";
 import { BackendCached } from "./helpers/backend-cached";
 
 const state = reactive({
-  username: "",
   games: [
     { pgn: "1. e4 c5 2. Nf3 d6 3. Nc3 Nf6 4. d4 cxd4 5. Nxd4 a6 6. ?-?" },
     {
@@ -27,14 +26,13 @@ const backend = BackendCached.getShared();
   <HeaderView
     :backend="backend"
     @games-loaded="
-      (games, username) => {
+      (games) => {
         state.games = games;
-        state.username = username;
       }
     "
   />
   <div v-for="game in state.games" :key="game" class="game-view">
-    <BoardView :game="game" :username="state.username" :backend="backend" />
+    <BoardView :game="game" :backend="backend" />
   </div>
 </template>
 

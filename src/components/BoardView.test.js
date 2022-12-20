@@ -18,7 +18,6 @@ describe("BoardView", () => {
     const { getByText } = render(BoardView, {
       props: {
         game: { pgn: "1.e4" },
-        username: "testuser",
         backend,
       },
     });
@@ -29,7 +28,6 @@ describe("BoardView", () => {
     const { getByText } = render(BoardView, {
       props: {
         game: { pgn: "1. e4 e5" },
-        username: "testuser",
         popularMoves: [
           { san: "Be3", masterGamesAmount: 35000, onlineGamesAmount: 323000 },
           { san: "Bg5", masterGamesAmount: 22000, onlineGamesAmount: 485000 },
@@ -43,7 +41,6 @@ describe("BoardView", () => {
     const { getAllByText } = render(BoardView, {
       props: {
         game: { pgn: "1. e4 e5" },
-        username: "testuser",
         bestMove: null,
         backend,
       },
@@ -58,7 +55,6 @@ describe("BoardView", () => {
       props: {
         backend,
         game: { pgn: "1. e4 e5" },
-        username: "testuser",
       },
     });
     const button = getByRole("button", { name: "+" });

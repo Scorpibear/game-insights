@@ -1,9 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { LichessClient } from "./lichess-client";
 
 const spyOn = vi.spyOn;
 
 describe("lichess client", () => {
+  let mocks = [];
   const lichessClient = new LichessClient();
   describe("getTheMostPopularByMasters", () => {
     it("fetches endpoint: https://explorer.lichess.ovh/masters", () => {
@@ -39,29 +40,38 @@ describe("lichess client", () => {
   });
   describe("getGames", () => {
     it("calls fetch to lichess.org/api/games/user", async () => {
-      const body = {on: (event, handler) => {
-        if(event == 'end') {
-          handler()
-        }
-      }};
-      spyOn(global, "fetch").mockResolvedValue({body});
+      const body = {
+        getReader: () => ({ read: () => Promise.resolve({ done: true }) }),
+      };
+      mocks.push(spyOn(global, "fetch").mockResolvedValue({ body }));
       await lichessClient.getGames("testuser", 2);
-      expect(global.fetch).toHaveBeenCalledWith("https://lichess.org/api/games/user/testuser?max=2&pgnInJson=true&opening=true",
-        {headers: {"Accept": "application/x-ndjson"}})
-    })
+      expect(global.fetch).toHaveBeenCalledWith(
+        "https://lichess.org/api/games/user/testuser?max=2&pgnInJson=true&opening=true",
+        { headers: { Accept: "application/x-ndjson" } }
+      );
+    });
     it("collects games from fetch output stream", async () => {
-      const game = {pgn: "1. e4 c6 2. d4 d5"};
-      const body = {on: (event, handler) => {
-        let encoder = new TextEncoder();
-        switch(event) {
-          case 'data': handler(encoder.encode(JSON.stringify(game))); break;
-          case 'end': handler(); break;
-          default: console.error(`unexpected event '${event}'`);
-        }
-      }};
-      spyOn(global, "fetch").mockResolvedValue({body});
-      
+      const game = { pgn: "1. e4 c6 2. d4 d5" };
+      const reader = { read: () => {} };
+      const encoder = new TextEncoder();
+      spyOn(reader, "read")
+        .mockResolvedValueOnce({
+          done: false,
+          value: encoder.encode(JSON.stringify(game)),
+        })
+        .mockResolvedValueOnce({ done: true });
+
+      const body = {
+        getReader: () => reader,
+      };
+      mocks.push(spyOn(global, "fetch").mockResolvedValue({ body }));
+
       expect(await lichessClient.getGames("testuser", 1)).toEqual([game]);
     });
+  });
+  afterEach(() => {
+    while (mocks.length) {
+      mocks.pop().restore();
+    }
   });
 });

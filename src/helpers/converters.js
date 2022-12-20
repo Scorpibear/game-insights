@@ -1,8 +1,15 @@
 import { Chess } from "chess.js";
 
+export const addUsername = (username) => (game) => ({ ...game, username });
+
+export const endTime2lastMoveAt = (game) =>
+  "end_time" in game ? { ...game, lastMoveAt: game.end_time * 1000 } : game;
+
 export const pgn2moves = (pgn) =>
   pgn
-    .replace(/(\[.*\])|(\d+\.\s)|(\n*)/g, "")
+    .replace(/\[[^\]]*\]\n/gm, "") // e.g. [Site "Chess.com"]\n
+    .replace(/\{[^}]*\}\s/gm, "") // e.g. {[%clk 0:03:01.2]}
+    .replace(/\d+\.{1,3}\s/gm, "") // e.g. '1. ' or '1... '
     .trim()
     .split(" ")
     .slice(0, -1);

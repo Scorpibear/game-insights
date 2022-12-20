@@ -1,4 +1,4 @@
-import { readStream } from "./stream-reader";
+import { readStream } from "../helpers/stream-reader";
 
 export class LichessClient {
   async getTheMostPopularByMasters(fen) {
@@ -39,19 +39,25 @@ export class LichessClient {
   }
   async getGames(userID, gamesToLoad = 3) {
     return new Promise((resolve, reject) => {
-      const apiURL = this.getGamesEndpoint(userID, gamesToLoad);
-      console.log(`calling ${apiURL}`);
-      const stream = fetch(apiURL, {
-        headers: { Accept: "application/x-ndjson" },
-      });
-      const games = [];
-      const onMessage = (game) => {
-        games.push(game);
-      };
-      const onComplete = () => {
-        resolve(games);
-      };
-      stream.then(readStream(onMessage)).then(onComplete).catch(reject);
+      try {
+        const apiURL = this.getGamesEndpoint(userID, gamesToLoad);
+        const stream = fetch(apiURL, {
+          headers: { Accept: "application/x-ndjson" },
+        });
+        const games = [];
+        const onMessage = (game) => {
+          games.push(game);
+        };
+        const onComplete = () => {
+          resolve(games);
+        };
+        stream.then(readStream(onMessage)).then(onComplete).catch(reject);
+      } catch (err) {
+        reject(err);
+      }
     });
+  }
+  async getLastGames(userId, gamesToLoad) {
+    return this.getGames(userId, gamesToLoad);
   }
 }

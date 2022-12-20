@@ -1,10 +1,12 @@
-import { CheguraClient } from "./chegura-client";
-import { LichessClient } from "./lichess-client";
+import { CheguraClient } from "../clients/chegura-client";
+import { ChessComClient } from "../clients/chesscom-client";
+import { LichessClient } from "../clients/lichess-client";
 import { lichess2fenData, mergeGameStats } from "./converters";
 import BestMoveCache from "./best-move-cache";
+import { GamesMerger } from "./games-merger";
 
 export class Backend {
-  constructor(cheguraClient, lichessClient) {
+  constructor(cheguraClient, chessComClient, lichessClient) {
     this.cheguraClient =
       cheguraClient ||
       new CheguraClient({
@@ -12,8 +14,13 @@ export class Backend {
         protocol: "https", //"http",
         //port: 9966,
       });
+    this.chessComClient = chessComClient || new ChessComClient();
     this.lichessClient = lichessClient || new LichessClient();
     this.bestMoveCache = new BestMoveCache(this.cheguraClient);
+    this.gamesMerger = new GamesMerger({
+      chessComClient: this.chessComClient,
+      lichessClient: this.lichessClient,
+    });
   }
   analyze(moves) {
     return this.cheguraClient.analyze(moves);
@@ -47,7 +54,7 @@ export class Backend {
   updateAltMoves(fen, altMoves) {
     this.bestMoveCache.updateAltMoves(fen, altMoves);
   }
-  async getGames(userID, gamesToLoad) {
-    return this.lichessClient.getGames(userID, gamesToLoad);
+  getGames(userData, gamesToLoad) {
+    return this.gamesMerger.getLastGames(userData, gamesToLoad);
   }
 }
