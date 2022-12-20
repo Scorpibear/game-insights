@@ -41,7 +41,6 @@ export class LichessClient {
     return new Promise((resolve, reject) => {
       try {
         const apiURL = this.getGamesEndpoint(userID, gamesToLoad);
-        console.log(`calling ${apiURL}`);
         const stream = fetch(apiURL, {
           headers: { Accept: "application/x-ndjson" },
         });

@@ -41,13 +41,6 @@ const props = defineProps({
       return value.pgn != undefined;
     },
   },
-  userData: {
-    type: Object,
-    required: false,
-    default() {
-      return {};
-    },
-  },
   bestMove: {
     type: Object,
     default() {
@@ -244,7 +237,7 @@ onMounted(() => {
   chess = new Chess();
   chess.load_pgn(pgn.value);
   board.orientation(
-    boardHelper.identifyOrientation(chess, props.userData.lichessUsername)
+    boardHelper.identifyOrientation(chess, props.game.username)
   );
   updateBoard();
 });

@@ -33,11 +33,7 @@ async function getInsights() {
     { chessComUsername: ccUsername.value, lichessUsername: liUsername.value },
     gamesToLoad
   );
-  emit("gamesLoaded", {
-    games,
-    chessComUsername: ccUsername.value,
-    lichessUsername: liUsername.value,
-  });
+  emit("gamesLoaded", games);
 }
 
 // lifecycle hooks

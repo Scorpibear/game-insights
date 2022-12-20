@@ -11,7 +11,7 @@ describe("GamesMerger", () => {
     lig1 = { testid: "last", pgn: "1. c4 Nf6", lastMoveAt: 1670877400000 }, // #4
     lig2 = { testid: "first", pgn: "1. Nf6 d5", lastMoveAt: 1670877100000 }; // #1
   const userData = {
-    chessComUsername: "testuser",
+    chessComUsername: "chessComUser",
     lichessUsername: "testuser",
   };
   let merger;
@@ -47,6 +47,12 @@ describe("GamesMerger", () => {
       spyOn(liClient, "getLastGames").mockResolvedValue([]);
       const [game] = await merger.getLastGames(userData, 1);
       expect(game.lastMoveAt).toBe(1670877300000);
+    });
+    it("adds corresponding username to the game data", async () => {
+      spyOn(ccClient, "getLastGames").mockResolvedValue([ccg1]);
+      spyOn(liClient, "getLastGames").mockResolvedValue([]);
+      const [game] = await merger.getLastGames(userData, 1);
+      expect(game.username).toBe("chessComUser");
     });
   });
 });

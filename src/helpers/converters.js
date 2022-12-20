@@ -1,5 +1,10 @@
 import { Chess } from "chess.js";
 
+export const addUsername = (username) => (game) => ({ ...game, username });
+
+export const endTime2lastMoveAt = (game) =>
+  "end_time" in game ? { ...game, lastMoveAt: game.end_time * 1000 } : game;
+
 export const pgn2moves = (pgn) =>
   pgn
     .replace(/\[[^\]]*\]\n/gm, "") // e.g. [Site "Chess.com"]\n

@@ -1,14 +1,30 @@
 import { describe, expect, it } from "vitest";
 import {
+  addUsername,
   pgn2moves,
   lichess2fenData,
   mergeGameStats,
   num2k,
   formatBest,
   formatPopular,
+  endTime2lastMoveAt,
 } from "./converters";
 
 describe("converters", () => {
+  describe("addUsername", () => {
+    it("returns transform function", () => {
+      const transformFunc = addUsername("testuser");
+      const res = transformFunc({ pgn: "1. d4 d5" });
+      expect(res).toEqual({ pgn: "1. d4 d5", username: "testuser" });
+    });
+  });
+  describe("endTime2lastMoveAt", () => {
+    it("multiplies at 1000 the value", () => {
+      const game = { end_time: 1234567 };
+      const outputGame = endTime2lastMoveAt(game);
+      expect(outputGame.lastMoveAt).toBe(1234567000);
+    });
+  });
   describe("pgn2moves", () => {
     it("works for lichess standard pgn", () => {
       const pgn = `[Event "Rated Rapid game"]
