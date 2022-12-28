@@ -4,6 +4,7 @@ import { LichessClient } from "../clients/lichess-client";
 import { lichess2fenData, mergeGameStats } from "./converters";
 import BestMoveCache from "./best-move-cache";
 import { GamesMerger } from "./games-merger";
+import { AltMovesDBSynced } from "./alt-moves-db-synced";
 
 export class Backend {
   constructor(cheguraClient, chessComClient, lichessClient) {
@@ -21,6 +22,7 @@ export class Backend {
       chessComClient: this.chessComClient,
       lichessClient: this.lichessClient,
     });
+    this.altMovesDB = new AltMovesDBSynced();
   }
   analyze(moves) {
     return this.cheguraClient.analyze(moves);
@@ -34,11 +36,15 @@ export class Backend {
     }
     const result = fenData?.bestMove
       ? fenData
-      : this.lichessClient
+      : await this.lichessClient
           .getCloudEval(fen)
           .then(lichess2fenData)
           .catch(() => {});
-    return result;
+    return this.addAlt(result, fen);
+  }
+  addAlt(data, fen) {
+    const alt = this.altMovesDB.get(fen);
+    return alt !== undefined ? { ...data, alt } : data;
   }
   async getPopularMoves(fen) {
     let jointData = {};
@@ -51,8 +57,8 @@ export class Backend {
     }
     return jointData;
   }
-  updateAltMoves(fen, altMoves) {
-    this.bestMoveCache.updateAltMoves(fen, altMoves);
+  updateAltMoves(fen, moves) {
+    this.altMovesDB.update(fen, moves);
   }
   getGames(userData, gamesToLoad) {
     return this.gamesMerger.getLastGames(userData, gamesToLoad);

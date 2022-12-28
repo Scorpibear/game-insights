@@ -106,25 +106,4 @@ describe("bestMoveCache", () => {
       expect(console.error).not.toHaveBeenCalled();
     });
   });
-  describe("updateAltMoves", () => {
-    it("saves alt to base", async () => {
-      vi.spyOn(fakeCloudClient, "getFenBase").mockResolvedValue([
-        ["fen1", { bestMove: "Nf3" }],
-      ]);
-      const bestMoveCache = new BestMoveCache(fakeCloudClient);
-      expect(fakeCloudClient.getFenBase).toHaveBeenCalled();
-      vi.spyOn(bestMoveCache, "saveBase").mockImplementation((base) => base);
-      await bestMoveCache.updateAltMoves("fen1", ["d4"]);
-      expect(bestMoveCache.saveBase).toHaveBeenCalled();
-    });
-    it("creates a new node if fenData not defined", async () => {
-      vi.spyOn(Date, "now").mockReturnValue(12345678);
-      const bestMoveCache = new BestMoveCache(fakeCloudClient);
-      await bestMoveCache.updateAltMoves("testFenNew", ["d4"]);
-      expect(await bestMoveCache.getFenData("testFenNew")).toEqual({
-        alt: ["d4"],
-        updated: 12345678,
-      });
-    });
-  });
 });

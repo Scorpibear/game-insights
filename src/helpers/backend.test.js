@@ -116,6 +116,11 @@ describe("backend", () => {
         await backend.getBestMove(fenSample);
         expect(console.error).not.toHaveBeenCalled();
       });
+      it("get alt moves", async () => {
+        spyOn(backend.altMovesDB, "get").mockReturnValue(["c5", "e5"]);
+        const data = await backend.getBestMove(fenSample);
+        expect(data.alt).toEqual(["c5", "e5"]);
+      });
     });
     describe("analyze", () => {
       it("calls chegura client", () => {
@@ -136,15 +141,13 @@ describe("backend", () => {
       });
     });
     describe("updateAltMoves", () => {
-      it("calls bestMoveCache as is", () => {
-        spyOn(backend.bestMoveCache, "updateAltMoves").mockImplementation(
-          () => {}
-        );
-        backend.updateAltMoves("fen", ["d4"]);
-        expect(backend.bestMoveCache.updateAltMoves).toHaveBeenCalledWith(
-          "fen",
-          ["d4"]
-        );
+      it("calls update to AltMovesDB", () => {
+        spyOn(backend.altMovesDB, "update").mockImplementation(() => {});
+        backend.updateAltMoves("testfen", ["c5", "d5"]);
+        expect(backend.altMovesDB.update).toHaveBeenCalledWith("testfen", [
+          "c5",
+          "d5",
+        ]);
       });
     });
   });
