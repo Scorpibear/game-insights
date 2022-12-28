@@ -4,7 +4,7 @@ import { LichessClient } from "../clients/lichess-client";
 import { lichess2fenData, mergeGameStats } from "./converters";
 import BestMoveCache from "./best-move-cache";
 import { GamesMerger } from "./games-merger";
-import { AltMovesDB } from "./alt-moves-db";
+import { AltMovesDBSynced } from "./alt-moves-db-synced";
 
 export class Backend {
   constructor(cheguraClient, chessComClient, lichessClient) {
@@ -22,7 +22,7 @@ export class Backend {
       chessComClient: this.chessComClient,
       lichessClient: this.lichessClient,
     });
-    this.altMovesDB = new AltMovesDB();
+    this.altMovesDB = new AltMovesDBSynced();
   }
   analyze(moves) {
     return this.cheguraClient.analyze(moves);
