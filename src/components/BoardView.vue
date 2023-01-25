@@ -6,6 +6,7 @@ import { Chess } from "chess.js";
 import { pgn2moves, formatPopular, formatBest } from "../helpers/converters";
 import boardHelper from "../helpers/board-helper";
 import GoodMovesView from "./GoodMovesView.vue";
+import PopularMovesView from "./PopularMovesView.vue";
 
 // constants
 
@@ -257,17 +258,7 @@ onMounted(() => {
   <div :id="boardID" class="chess-board">Loading...</div>
   <div class="stats">
     <GoodMovesView :data="bestMove" @update-alt="updateAltMoves" />
-    <div class="popular-move-info">
-      <span>Popular: </span>
-      <span
-        v-if="popularMoves && popularMoves.length"
-        id="popular-moves-data"
-        >{{ formatPopular(popularMoves) }}</span
-      >
-      <span v-else>
-        {{ popularMoves === undefined ? "searching..." : "no data" }}
-      </span>
-    </div>
+    <PopularMovesView :data="popularMoves" />
   </div>
   <div class="navigation">
     <button class="control" @click="goBack">&laquo;</button>
