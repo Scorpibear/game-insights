@@ -9,6 +9,15 @@ const props = defineProps({
     required: false,
   },
 });
+
+const emit = defineEmits(["split"]);
+
+function split() {
+  emit(
+    "split",
+    props.data.map((item) => item.san)
+  );
+}
 </script>
 <template>
   <div class="popular-move-info">
@@ -19,5 +28,18 @@ const props = defineProps({
     <span v-else>
       {{ props.data === undefined ? "searching..." : "no data" }}
     </span>
+    <button
+      v-if="props.data && props.data.length > 1"
+      id="split"
+      alt="split"
+      @click="split"
+    >
+      Ψ
+    </button>
   </div>
 </template>
+<style scoped>
+#split {
+  transform: rotate(90deg);
+}
+</style>

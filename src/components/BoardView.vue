@@ -3,7 +3,7 @@
 
 import { onMounted, ref } from "vue";
 import { Chess } from "chess.js";
-import { pgn2moves, formatPopular, formatBest } from "../helpers/converters";
+import { pgn2moves, formatBest } from "../helpers/converters";
 import boardHelper from "../helpers/board-helper";
 import GoodMovesView from "./GoodMovesView.vue";
 import PopularMovesView from "./PopularMovesView.vue";
@@ -70,6 +70,8 @@ const hint = ref(
 const bestMove = ref(props.bestMove);
 const popularMoves = ref(props.popularMoves);
 const openingInfo = ref({});
+
+const emit = defineEmits(["split"]);
 
 // methods
 
@@ -222,6 +224,23 @@ function goNext() {
   }
 }
 
+function split(moves) {
+  console.log("board.orientation():", board.orientation());
+  const games = moves.map((move) => {
+    const chessCopy = new Chess();
+    chessCopy.load_pgn(pgn.value);
+    chessCopy.move(move);
+    const game = {
+      pgn: chessCopy.pgn(),
+      username: props.game.username,
+      orientation: board.orientation(),
+    };
+    return game;
+  });
+  console.log("games: ", games);
+  emit("split", games);
+}
+
 function updateAltMoves(altMoves) {
   if (!bestMove.value) bestMove.value = {};
   bestMove.value.alt = altMoves;
@@ -237,8 +256,14 @@ onMounted(() => {
   $board = window.$(`#${boardID}`);
   chess = new Chess();
   chess.load_pgn(pgn.value);
-  board.orientation(
+  console.log("props.game.orientation: ", props.game.orientation);
+  console.log(
+    "boardHelper.identifyOrientation(chess, props.game.username): ",
     boardHelper.identifyOrientation(chess, props.game.username)
+  );
+  board.orientation(
+    props.game.orientation ||
+      boardHelper.identifyOrientation(chess, props.game.username)
   );
   updateBoard();
 });
@@ -258,7 +283,7 @@ onMounted(() => {
   <div :id="boardID" class="chess-board">Loading...</div>
   <div class="stats">
     <GoodMovesView :data="bestMove" @update-alt="updateAltMoves" />
-    <PopularMovesView :data="popularMoves" />
+    <PopularMovesView :data="popularMoves" @split="split" />
   </div>
   <div class="navigation">
     <button class="control" @click="goBack">&laquo;</button>
