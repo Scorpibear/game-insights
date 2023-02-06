@@ -225,7 +225,6 @@ function goNext() {
 }
 
 function split(moves) {
-  console.log("board.orientation():", board.orientation());
   const games = moves.map((move) => {
     const chessCopy = new Chess();
     chessCopy.load_pgn(pgn.value);
@@ -237,7 +236,6 @@ function split(moves) {
     };
     return game;
   });
-  console.log("games: ", games);
   emit("split", games);
 }
 
@@ -256,11 +254,6 @@ onMounted(() => {
   $board = window.$(`#${boardID}`);
   chess = new Chess();
   chess.load_pgn(pgn.value);
-  console.log("props.game.orientation: ", props.game.orientation);
-  console.log(
-    "boardHelper.identifyOrientation(chess, props.game.username): ",
-    boardHelper.identifyOrientation(chess, props.game.username)
-  );
   board.orientation(
     props.game.orientation ||
       boardHelper.identifyOrientation(chess, props.game.username)
