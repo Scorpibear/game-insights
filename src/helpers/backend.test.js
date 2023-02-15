@@ -150,5 +150,13 @@ describe("backend", () => {
         ]);
       });
     });
+    describe("addAlt", () => {
+      it("provide valid object in case of no best move data but alt is available", () => {
+        spyOn(backend.altMovesDB, "get").mockReturnValueOnce(["e4"]);
+        expect(backend.addAlt(undefined, "somefen")).toEqual({
+          alt: ["e4"],
+        });
+      });
+    });
   });
 });

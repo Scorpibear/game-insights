@@ -167,8 +167,11 @@ describe("converters", () => {
     it("null in, null out", () => {
       expect(formatBest(null)).toBeNull();
     });
-    it("returns null if bestMove is missed", () => {
-      expect(formatBest({ cp: -67, depth: 67 })).toBeNull();
+    it("returns empty object if no bestMove", () => {
+      expect(formatBest({ cp: -67, depth: 67 })).toEqual({});
+    });
+    it("saves alt even if bestMove is missed", () => {
+      expect(formatBest({ alt: ["e4"] })).toEqual({ alt: ["e4"] });
     });
   });
   describe("formatPopular", () => {
