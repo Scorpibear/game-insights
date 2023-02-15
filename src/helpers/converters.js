@@ -65,19 +65,23 @@ export const num2k = (num) =>
     : "" + num;
 
 export const formatBest = (data) =>
-  data && data.bestMove
-    ? {
-        san: data.bestMove,
-        score:
-          'score' in data
-            ? data.score
-            : 'cp' in data
-            ? data.cp / 100
-            : undefined,
-        depth: data.depth,
-        alt: data.alt,
-      }
-    : null;
+  data
+    ? data.bestMove
+      ? {
+          san: data.bestMove,
+          score:
+            "score" in data
+              ? data.score
+              : "cp" in data
+              ? data.cp / 100
+              : undefined,
+          depth: data.depth,
+          alt: data.alt,
+        }
+      : data.alt
+      ? { alt: data.alt }
+      : {}
+    : data;
 
 export const formatPopular = (movesData) =>
   movesData
