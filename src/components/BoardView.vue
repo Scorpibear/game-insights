@@ -71,7 +71,7 @@ const bestMove = ref(props.bestMove);
 const popularMoves = ref(props.popularMoves);
 const openingInfo = ref({});
 
-const emit = defineEmits(["split"]);
+const emit = defineEmits(["replaceWith"]);
 
 // methods
 
@@ -236,7 +236,11 @@ function split(moves) {
     };
     return game;
   });
-  emit("split", games);
+  emit("replaceWith", games);
+}
+
+function close() {
+  emit("replaceWith", []);
 }
 
 function updateAltMoves(altMoves) {
@@ -273,7 +277,10 @@ onMounted(() => {
       {{ hint }}
     </div>
   </div>
-  <div :id="boardID" class="chess-board">Loading...</div>
+  <div class="main">
+    <div :id="boardID" class="chess-board">Loading...</div>
+    <button id="close" @click="close">x</button>
+  </div>
   <div class="stats">
     <GoodMovesView :data="bestMove" @update-alt="updateAltMoves" />
     <PopularMovesView :data="popularMoves" @split="split" />
@@ -302,6 +309,9 @@ onMounted(() => {
 </template>
 
 <style>
+.main {
+  display: flex;
+}
 textarea,
 input {
   margin-top: 5px;
@@ -331,6 +341,9 @@ input {
   text-align: right;
   text-transform: uppercase;
 }
+#close {
+  height: min-content;
+}
 .hint {
   margin: 2px;
 }
@@ -342,7 +355,6 @@ input {
 }
 .control {
   color: #5e5e5e;
-  text-transform: uppercase;
   line-height: 1.5;
   margin: 2pt;
 }
@@ -353,5 +365,8 @@ input {
   word-wrap: normal;
   width: auto;
   font-size: smaller;
+}
+.chessboard {
+  display: block;
 }
 </style>
