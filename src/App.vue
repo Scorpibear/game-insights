@@ -35,7 +35,7 @@ const backend = BackendCached.getShared();
     <BoardView
       :game="game"
       :backend="backend"
-      @split="(newGames) => state.games.splice(index, 1, ...newGames)"
+      @replace-with="(newGames) => state.games.splice(index, 1, ...newGames)"
     />
   </div>
 </template>
