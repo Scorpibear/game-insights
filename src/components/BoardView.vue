@@ -278,8 +278,12 @@ onMounted(() => {
     </div>
   </div>
   <div class="main">
-    <div :id="boardID" class="chess-board">Loading...</div>
-    <button id="close" @click="close">x</button>
+    <div class="main-column">
+      <div :id="boardID" class="chess-board">Loading...</div>
+    </div>
+    <div class="right-column">
+      <button id="close" @click="close">x</button>
+    </div>
   </div>
   <div class="stats">
     <GoodMovesView :data="bestMove" @update-alt="updateAltMoves" />
@@ -309,9 +313,6 @@ onMounted(() => {
 </template>
 
 <style>
-.main {
-  display: flex;
-}
 textarea,
 input {
   margin-top: 5px;
@@ -368,5 +369,11 @@ input {
 }
 .chessboard {
   display: block;
+}
+.main {
+  display: flex;
+}
+.main-column {
+  flex: auto;
 }
 </style>
