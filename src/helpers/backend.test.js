@@ -12,7 +12,6 @@ describe("backend", () => {
   };
   let chessComClient = {};
   let liClient = {
-    getCloudEval: () => Promise.resolve({ bestMove: "d4" }),
     getTheMostPopularByMasters: () => Promise.resolve({}),
     getTheMostPopularOnline: () => Promise.resolve({}),
   };
@@ -77,42 +76,14 @@ describe("backend", () => {
         backend.getBestMove();
         expect(backend.bestMoveCache.getFenData).toHaveBeenCalled();
       });
-      it("get lichess /api/cloud-eval if data from bestMoveCache is empty", async () => {
-        spyOn(backend.bestMoveCache, "getFenData").mockImplementation(() =>
-          Promise.resolve({})
-        );
-        spyOn(liClient, "getCloudEval").mockImplementation(() =>
-          Promise.resolve({
-            fen: "rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
-            knodes: 13683,
-            depth: 50,
-            pvs: [
-              {
-                moves: "c8f5 d2d4 e7e6 g1f3 g8e7 c1e3 c7c5 d4c5 e7c6 b1c3",
-                cp: -13,
-              },
-            ],
-          })
-        );
-        const data = await backend.getBestMove(fenSample);
-        expect(data).toEqual({ bestMove: "Bf5", cp: -13, depth: 50 });
-      });
-      it("get cloudEval if bestMoveCache fails", async () => {
-        spyOn(backend.bestMoveCache, "getFenData").mockRejectedValue("oops");
-        spyOn(liClient, "getCloudEval");
-        await backend.getBestMove("some fen");
-        expect(liClient.getCloudEval).toHaveBeenCalled();
-      });
       it("returns undefined if there is no best move data from any sources", async () => {
-        spyOn(cheClient, "getFenData").mockRejectedValue("err1");
-        spyOn(liClient, "getCloudEval").mockRejectedValue("err2");
+        spyOn(backend.bestMoveCache, "getFenData").mockRejectedValue("err1");
         const res = await backend.getBestMove(fenSample);
         expect(res).toBeUndefined();
       });
       it("does not spoil console with errors if there is no data from any sources", async () => {
         spyOn(console, "error");
-        spyOn(cheClient, "getFenData").mockRejectedValue("err1");
-        spyOn(liClient, "getCloudEval").mockRejectedValue("err2");
+        spyOn(backend.bestMoveCache, "getFenData").mockRejectedValue("err1");
         await backend.getBestMove(fenSample);
         expect(console.error).not.toHaveBeenCalled();
       });
