@@ -26,18 +26,6 @@ describe("lichess client", () => {
       );
     });
   });
-  describe("getCloudEval", () => {
-    it("fetches endpoint https://lichess.org/api/cloud-eval", async () => {
-      spyOn(global, "fetch").mockResolvedValue({
-        json: () => Promise.resolve({}),
-      });
-      await lichessClient.getCloudEval("TESTFEN");
-      expect(fetch).toHaveBeenCalledWith(
-        "https://lichess.org/api/cloud-eval?fen=TESTFEN",
-        { headers: { Accept: "application/json" } }
-      );
-    });
-  });
   describe("getGames", () => {
     it("calls fetch to lichess.org/api/games/user", async () => {
       const body = {

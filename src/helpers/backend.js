@@ -1,7 +1,7 @@
 import { CheguraClient } from "../clients/chegura-client";
 import { ChessComClient } from "../clients/chesscom-client";
 import { LichessClient } from "../clients/lichess-client";
-import { lichess2fenData, mergeGameStats } from "./converters";
+import { mergeGameStats } from "./converters";
 import BestMoveCache from "./best-move-cache";
 import { GamesMerger } from "./games-merger";
 import { AltMovesDBSynced } from "./alt-moves-db-synced";
@@ -34,13 +34,7 @@ export class Backend {
     } catch (err) {
       // do nothing, no need to spam in console
     }
-    const result = fenData?.bestMove
-      ? fenData
-      : await this.lichessClient
-          .getCloudEval(fen)
-          .then(lichess2fenData)
-          .catch(() => {});
-    return this.addAlt(result, fen);
+    return this.addAlt(fenData, fen);
   }
   addAlt(data, fen) {
     const alt = this.altMovesDB.get(fen);

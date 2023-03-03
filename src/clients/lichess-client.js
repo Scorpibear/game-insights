@@ -18,22 +18,6 @@ export class LichessClient {
     });
     return response.json();
   }
-  async getCloudEval(fen) {
-    return new Promise((resolve) => {
-      setTimeout(async () => {
-        const url = `https://lichess.org/api/cloud-eval?fen=${fen}`;
-        try {
-          const response = await fetch(url, {
-            headers: { Accept: "application/json" },
-          });
-          const result = await response.json();
-          resolve(result);
-        } catch (err) {
-          resolve({}); // no cloud eval - not an issue
-        }
-      }, 100);
-    });
-  }
   getGamesEndpoint(userID, gamesToLoad) {
     return `https://lichess.org/api/games/user/${userID}?max=${gamesToLoad}&pgnInJson=true&opening=true`;
   }

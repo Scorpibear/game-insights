@@ -12,6 +12,7 @@ import PopularMovesView from "./PopularMovesView.vue";
 
 const replayInterval = 300;
 const maxReplayPlies = 50;
+const targetDepth = 46;
 const squareClass = "square-55d63";
 
 const boardID = "chessBoard" + Math.round(Math.random() * 1000000);
@@ -163,7 +164,7 @@ function updatePopular(data) {
 }
 
 function analyze() {
-  if (!bestMove.value) {
+  if (!bestMove.value || bestMove.value.depth < targetDepth) {
     backend.analyze(pgn2moves(pgn.value));
   }
 }
@@ -337,6 +338,7 @@ input {
 }
 .opening {
   text-align: left;
+  font-size: small;
 }
 #learn {
   text-align: right;
