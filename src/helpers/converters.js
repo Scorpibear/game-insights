@@ -7,12 +7,14 @@ export const endTime2lastMoveAt = (game) =>
 
 export const pgn2moves = (pgn) =>
   pgn
-    .replace(/\[[^\]]*\]\n/gm, "") // e.g. [Site "Chess.com"]\n
-    .replace(/\{[^}]*\}\s/gm, "") // e.g. {[%clk 0:03:01.2]}
-    .replace(/\d+\.{1,3}\s/gm, "") // e.g. '1. ' or '1... '
-    .trim()
-    .split(" ")
-    .slice(0, -1);
+    ? pgn
+        .replace(/\[[^\]]*\]\n/gm, "") // e.g. [Site "Chess.com"]\n
+        .replace(/\{[^}]*\}\s/gm, "") // e.g. {[%clk 0:03:01.2]}
+        .replace(/\d+\.{1,3}\s/gm, "") // e.g. '1. ' or '1... '
+        .replace(/(1-0)|(0-1)|(\?-\?)/gm, "") // e.g. '1-0' or ?-? at the end
+        .trim()
+        .split(" ")
+    : [];
 
 export function lichess2fenData(input) {
   const result = { depth: input.depth };
