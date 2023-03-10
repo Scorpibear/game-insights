@@ -52,6 +52,9 @@ describe("converters", () => {
       const moves = pgn2moves(pgn);
       expect(moves).toEqual(["e4", "c5", "c3", "d5", "exd5"]);
     });
+    it("works for simple pgn", () => {
+      expect(pgn2moves("1. d4 d5")).toEqual(["d4", "d5"]);
+    });
   });
   describe("lichess2fenData", () => {
     const input = {
