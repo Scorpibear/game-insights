@@ -10,7 +10,7 @@ describe("HeaderView", () => {
     });
 
     // assert output
-    getByText("Game insights for:");
+    getByText("lichess /");
   });
   describe("get button", () => {
     it("request the latest games from backend", () => {});

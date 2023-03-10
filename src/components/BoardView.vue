@@ -306,7 +306,12 @@ onMounted(() => {
     <div class="pgn">
       <div class="pair">
         <label class="name">PGN</label>
-        <textarea id="pgn" v-model="pgn" class="copyable autoselect"></textarea>
+        <textarea
+          id="pgn"
+          v-model="pgn"
+          class="copyable autoselect"
+          rows="4"
+        ></textarea>
       </div>
     </div>
   </div>

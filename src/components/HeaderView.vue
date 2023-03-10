@@ -7,7 +7,6 @@ import { ref, onMounted } from "vue";
 
 const chessComUsernameKey = "profile.chesscom.username";
 const lichessUsernameKey = "profile.lichess.username";
-const gamesToLoad = 5;
 let backend;
 
 // vue.js definitions
@@ -21,6 +20,7 @@ const props = defineProps({
 
 const ccUsername = ref(localStorage.getItem(chessComUsernameKey) || "");
 const liUsername = ref(localStorage.getItem(lichessUsernameKey) || "");
+const gamesToLoad = ref(5);
 
 const emit = defineEmits(["gamesLoaded"]);
 
@@ -31,7 +31,7 @@ async function getInsights() {
   localStorage.setItem(lichessUsernameKey, liUsername.value);
   const games = await backend.getGames(
     { chessComUsername: ccUsername.value, lichessUsername: liUsername.value },
-    gamesToLoad
+    gamesToLoad.value
   );
   emit("gamesLoaded", games);
 }
@@ -44,10 +44,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <h4 class="input">
-    <label>Game insights for: </label>
+  <div class="input">
     <label
-      >chess.com
+      >Games
+      <input
+        id="games-count"
+        v-model="gamesToLoad"
+        type="number"
+        name="games-count"
+        min="1"
+        max="15"
+      />
+    </label>
+    <label
+      >chess.com /
       <input
         v-model="ccUsername"
         class="username"
@@ -56,7 +66,7 @@ onMounted(() => {
       />
     </label>
     <label
-      >lichess
+      >lichess /
       <input
         v-model="liUsername"
         class="username"
@@ -64,19 +74,23 @@ onMounted(() => {
         title="lichess.org username"
     /></label>
     <button @click="getInsights">Get!</button>
-  </h4>
+  </div>
 </template>
 
 <style scoped>
 .input {
   display: flex;
+  font-weight: bold;
   justify-content: center;
+  margin: 0px;
 }
 label {
   margin-right: 5pt;
 }
 .username {
-  max-width: 80pt;
-  margin: 0px;
+  max-width: 60pt;
+}
+#games-count {
+  width: 25pt;
 }
 </style>
