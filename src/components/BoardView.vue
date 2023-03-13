@@ -164,7 +164,7 @@ function updatePopular(data) {
 }
 
 function analyze() {
-  if (!bestMove.value || bestMove.value.depth < targetDepth) {
+  if (!bestMove.value?.san || bestMove.value.depth < targetDepth) {
     backend.analyze(pgn2moves(pgn.value));
   }
 }
