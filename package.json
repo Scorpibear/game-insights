@@ -2,7 +2,7 @@
   "name": "game-insights",
   "description": "Game Insights based on run-time modern opening theory from what was recently played by you at lichess.org/chess.com",
   "private": true,
-  "version": "0.5",
+  "version": "0.5.1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
