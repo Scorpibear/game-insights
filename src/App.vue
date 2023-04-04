@@ -3,6 +3,7 @@ import { reactive } from "vue";
 
 import HeaderView from "./components/HeaderView.vue";
 import BoardView from "./components/BoardView.vue";
+import FooterView from "./components/FooterView.vue";
 
 import { BackendCached } from "./helpers/backend-cached";
 
@@ -38,6 +39,7 @@ const backend = BackendCached.getShared();
       @replace-with="(newGames) => state.games.splice(index, 1, ...newGames)"
     />
   </div>
+  <FooterView />
 </template>
 
 <style>
