@@ -4,7 +4,6 @@ import { LichessClient } from "./lichess-client";
 const spyOn = vi.spyOn;
 
 describe("lichess client", () => {
-  let mocks = [];
   const lichessClient = new LichessClient();
   describe("getTheMostPopularByMasters", () => {
     it("fetches endpoint: https://explorer.lichess.ovh/masters", () => {
@@ -14,6 +13,9 @@ describe("lichess client", () => {
         "https://explorer.lichess.ovh/masters?fen=TESTFEN",
         { headers: { Accept: "application/json" } }
       );
+    });
+    afterEach(() => {
+      vi.restoreAllMocks();
     });
   });
   describe("getTheMostPopularOnline", () => {
@@ -25,13 +27,16 @@ describe("lichess client", () => {
         { headers: { Accept: "application/json" } }
       );
     });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
   });
   describe("getGames", () => {
     it("calls fetch to lichess.org/api/games/user", async () => {
       const body = {
         getReader: () => ({ read: () => Promise.resolve({ done: true }) }),
       };
-      mocks.push(spyOn(global, "fetch").mockResolvedValue({ body }));
+      spyOn(global, "fetch").mockResolvedValue({ body });
       await lichessClient.getGames("testuser", 2);
       expect(global.fetch).toHaveBeenCalledWith(
         "https://lichess.org/api/games/user/testuser?max=2&pgnInJson=true&opening=true",
@@ -52,14 +57,11 @@ describe("lichess client", () => {
       const body = {
         getReader: () => reader,
       };
-      mocks.push(spyOn(global, "fetch").mockResolvedValue({ body }));
-
+      spyOn(global, "fetch").mockResolvedValue({ body });
       expect(await lichessClient.getGames("testuser", 1)).toEqual([game]);
     });
   });
   afterEach(() => {
-    while (mocks.length) {
-      mocks.pop().restore();
-    }
+    vi.restoreAllMocks();
   });
 });

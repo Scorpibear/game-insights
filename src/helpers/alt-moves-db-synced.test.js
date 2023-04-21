@@ -5,12 +5,9 @@ const spyOn = vi.spyOn;
 
 describe("AltMovesDBSynced", () => {
   describe("constructor", () => {
-    let mocks = [];
     it("loads data from localStorage", () => {
-      mocks.push(
-        spyOn(global.localStorage, "getItem").mockReturnValue(
-          '[["fentestload",["O-O-O"]]]'
-        )
+      spyOn(global.localStorage, "getItem").mockReturnValue(
+        '[["fentestload",["O-O-O"]]]'
       );
       let db = new AltMovesDBSynced();
       expect(db.get("fentestload")).toEqual(["O-O-O"]);
@@ -22,26 +19,20 @@ describe("AltMovesDBSynced", () => {
       expect(db.get("fen1")).toEqual(["c4"]);
     });
     it("don't try to parse if no data in localStorage", () => {
-      mocks.push(
-        spyOn(global.localStorage, "getItem").mockReturnValue(undefined)
-      );
+      spyOn(global.localStorage, "getItem").mockReturnValue(undefined);
       spyOn(global.JSON, "parse");
       new AltMovesDBSynced();
       expect(global.JSON.parse).not.toHaveBeenCalled();
     });
     it("initiates even if localStorage is broken", () => {
-      mocks.push(
-        spyOn(global.localStorage, "getItem").mockReturnValue(
-          "broken{serialized string"
-        )
+      spyOn(global.localStorage, "getItem").mockReturnValue(
+        "broken{serialized string"
       );
-      mocks.push(spyOn(console, "error").mockImplementation(() => {}));
+      spyOn(console, "error").mockImplementation(() => {});
       expect(new AltMovesDBSynced()).toBeDefined();
     });
     afterEach(() => {
-      while (mocks.length) {
-        mocks.pop().restore();
-      }
+      vi.restoreAllMocks();
     });
   });
   describe("methods", () => {
