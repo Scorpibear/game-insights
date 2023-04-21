@@ -78,14 +78,13 @@ describe("BoardView", () => {
     const button = getByText("Replay & Learn");
     await fireEvent.click(button);
   });
-  it("closes the board", async () => {
-    const { getByRole, findAllByText } = render(BoardView, {
+  it("close the board emits board.replaceWith event", async () => {
+    const wrapper = render(BoardView, {
       props: { backend, game: { pgn: "1. e4" } },
     });
 
-    const button = getByRole(button, { name: "x" });
-    expect(findAllByText("Popular:").length).toBe(1);
+    const button = wrapper.getByRole("button", { name: "x" });
     await fireEvent.click(button);
-    expect(findAllByText("Popular:").length).toBe(0);
+    expect(wrapper.emitted()).toHaveProperty("replaceWith");
   });
 });
