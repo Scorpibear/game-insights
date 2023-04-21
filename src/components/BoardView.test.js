@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 
 // mocks to make Chessboard work
 window.$ = () => {};
-window.Chessboard = () => ({ orientation: () => {}, position: () => {} });
+window.Chessboard = () => ({ orientation: () => "white", position: () => {} });
 
 const backend = {
   updateAltMoves: () => {},
@@ -61,5 +61,30 @@ describe("BoardView", () => {
     await fireEvent.click(button);
 
     expect(backend.updateAltMoves).toHaveBeenCalled();
+  });
+  it("has continue with the main line option", async () => {
+    const { getByText } = render(BoardView, {
+      props: { backend, game: { pgn: "1. e4" } },
+    });
+
+    const button = getByText("Continue with Main Line");
+    await fireEvent.click(button);
+  });
+  it("has Replay & Learn button", async () => {
+    const { getByText } = render(BoardView, {
+      props: { backend, game: { pgn: "1. e4" } },
+    });
+
+    const button = getByText("Replay & Learn");
+    await fireEvent.click(button);
+  });
+  it("close the board emits board.replaceWith event", async () => {
+    const wrapper = render(BoardView, {
+      props: { backend, game: { pgn: "1. e4" } },
+    });
+
+    const button = wrapper.getByRole("button", { name: "x" });
+    await fireEvent.click(button);
+    expect(wrapper.emitted()).toHaveProperty("replaceWith");
   });
 });
