@@ -70,4 +70,22 @@ describe("BoardView", () => {
     const button = getByText("Continue with Main Line");
     await fireEvent.click(button);
   });
+  it("has Replay & Learn button", async () => {
+    const { getByText } = render(BoardView, {
+      props: { backend, game: { pgn: "1. e4" } },
+    });
+
+    const button = getByText("Replay & Learn");
+    await fireEvent.click(button);
+  });
+  it("closes the board", async () => {
+    const { getByRole, findAllByText } = render(BoardView, {
+      props: { backend, game: { pgn: "1. e4" } },
+    });
+
+    const button = getByRole(button, { name: "x" });
+    expect(findAllByText("Popular:").length).toBe(1);
+    await fireEvent.click(button);
+    expect(findAllByText("Popular:").length).toBe(0);
+  });
 });
