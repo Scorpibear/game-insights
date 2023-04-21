@@ -37,6 +37,9 @@ describe("chess.com client", () => {
       }
       expect(passed).toBeFalsy();
     });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
   });
   describe("getGamesForMonth", () => {
     it("fetch https://api.chess.com/pub/player/${username}/games/${year}/${month}", async () => {
@@ -46,21 +49,21 @@ describe("chess.com client", () => {
         "https://api.chess.com/pub/player/testuser/games/2022/12"
       );
     });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
   });
   describe("getLastGames", () => {
-    let mocks = [];
     it("get the last 3 games from the last month when they are present", async () => {
       spyOn(chesscomClient, "getGamesArchives").mockResolvedValue([
         "https://api.chess.com/pub/player/testuser/games/2022/11",
       ]);
-      mocks.push(
-        spyOn(chesscomClient, "getGamesByUrl").mockResolvedValue([
-          g1,
-          g2,
-          g3,
-          g4,
-        ])
-      );
+      spyOn(chesscomClient, "getGamesByUrl").mockResolvedValue([
+        g1,
+        g2,
+        g3,
+        g4,
+      ]);
       const games = await chesscomClient.getLastGames("testuser", 3);
       expect(games).toEqual([g2, g3, g4]);
     });
@@ -69,18 +72,16 @@ describe("chess.com client", () => {
         "https://api.chess.com/pub/player/testuser/games/2022/10",
         "https://api.chess.com/pub/player/testuser/games/2022/11",
       ]);
-      mocks.push(
-        spyOn(chesscomClient, "getGamesByUrl").mockImplementation((url) =>
-          url.includes("2022/10")
-            ? Promise.resolve([g1, g2])
-            : Promise.resolve([g3, g4])
-        )
+      spyOn(chesscomClient, "getGamesByUrl").mockImplementation((url) =>
+        url.includes("2022/10")
+          ? Promise.resolve([g1, g2])
+          : Promise.resolve([g3, g4])
       );
       const games = await chesscomClient.getLastGames("testuser", 3);
       expect(games).toEqual([g2, g3, g4]);
     });
     afterEach(() => {
-      mocks.forEach((mock) => mock.restore());
+      vi.restoreAllMocks();
     });
   });
   describe("getGamesByUrl", () => {
@@ -98,6 +99,9 @@ describe("chess.com client", () => {
         );
       }
       expect(passed).toBeFalsy();
+    });
+    afterEach(() => {
+      vi.restoreAllMocks();
     });
   });
 });

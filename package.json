@@ -2,7 +2,7 @@
   "name": "game-insights",
   "description": "Game Insights based on run-time modern opening theory from what was recently played by you at lichess.org/chess.com",
   "private": true,
-  "version": "0.5.1",
+  "version": "0.7.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -16,19 +16,19 @@
   "dependencies": {
     "chess.js": "^0.13.4",
     "node-cache": "^5.1.2",
-    "vue": "^3.2.45"
+    "vue": "^3.2.47"
   },
   "devDependencies": {
-    "@testing-library/vue": "^6.4.2",
+    "@testing-library/vue": "^7.0.0",
     "@vitejs/plugin-vue": "^4.0.0",
-    "@vitest/coverage-c8": "^0.29.2",
+    "@vitest/coverage-c8": "^0.29.8",
     "c8": "^7.12.0",
-    "eslint": "^8.35.0",
+    "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.7.0",
-    "eslint-plugin-vue": "^9.8.0",
-    "happy-dom": "^8.9.0",
-    "prettier": "^2.8.4",
+    "eslint-plugin-vue": "^9.11.0",
+    "happy-dom": "^9.9.2",
+    "prettier": "^2.8.7",
     "vite": "^4.1.4",
-    "vitest": "^0.29.2"
+    "vitest": "^0.30.1"
   }
 }
