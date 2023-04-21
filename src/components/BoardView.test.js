@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 
 // mocks to make Chessboard work
 window.$ = () => {};
-window.Chessboard = () => ({ orientation: () => {}, position: () => {} });
+window.Chessboard = () => ({ orientation: () => "white", position: () => {} });
 
 const backend = {
   updateAltMoves: () => {},
@@ -61,5 +61,13 @@ describe("BoardView", () => {
     await fireEvent.click(button);
 
     expect(backend.updateAltMoves).toHaveBeenCalled();
+  });
+  it("has continue with the main line option", async () => {
+    const { getByText } = render(BoardView, {
+      props: { backend, game: { pgn: "1. e4" } },
+    });
+
+    const button = getByText("Continue with Main Line");
+    await fireEvent.click(button);
   });
 });

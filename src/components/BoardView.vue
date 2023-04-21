@@ -11,6 +11,8 @@ import PopularMovesView from "./PopularMovesView.vue";
 // constants
 
 const replayInterval = 300;
+const mainLineStudyInterval = 1000;
+const mainLineStudyPliesLimit = 10;
 const maxReplayPlies = 50;
 const targetDepth = 46;
 const squareClass = "square-55d63";
@@ -66,7 +68,7 @@ const props = defineProps({
 const fen = ref("");
 const pgn = ref("");
 const hint = ref(
-  "Let's learn something about this game. Press 'LEARN' when ready"
+  "Let's learn something about this game. Press 'Reply & Learn' when ready"
 );
 const bestMove = ref(props.bestMove);
 const popularMoves = ref(props.popularMoves);
@@ -76,7 +78,7 @@ const emit = defineEmits(["replaceWith"]);
 
 // methods
 
-const isOurMove = (moveData) => board.orientation().startsWith(moveData?.color);
+const isOurMove = () => board.orientation().startsWith(chess.turn());
 
 function highlightMove(aMove, type) {
   if (!$board) {
@@ -91,7 +93,7 @@ function highlightMove(aMove, type) {
     verbose: true,
   });
   let moveData = possibleMoves.find((move) => move.san == aMove);
-  if (moveData /*&& isOurMove(moveData)*/) {
+  if (moveData) {
     $board.find("." + squareClass).removeClass(className);
     $board.find(".square-" + moveData.from).addClass(className);
     $board.find(".square-" + moveData.to).addClass(className);
@@ -142,13 +144,13 @@ async function updateMoveInfo() {
     .getBestMove(fen.value)
     .then((data) => (bestMove.value = formatBest(data)))
     .catch(() => (bestMove.value = null))
-    .finally(() => highlightMove(bestMove.value?.san, "best"))
+    .finally(() => highlightMove(getBestMoveSan(), "best"))
     .then(analyze);
   await backend
     .getPopularMoves(fen.value)
     .then(updatePopular)
     .catch(() => (popularMoves.value = null))
-    .finally(() => highlightMove(popularMoves.value?.[0]?.san, "popular"));
+    .finally(() => highlightMove(getPopularMoveSan(), "popular"));
 }
 
 const updateFen = () => (fen.value = chess.fen());
@@ -187,7 +189,7 @@ function showNextMove(moves, plyNumber) {
       const allGood = (bestMove.value?.alt || []).concat(bestMove.value?.san);
       let move = chess.move(moves[plyNumber]);
       await updateBoard();
-      if (isOurMove(move) && !allGood.includes(move.san)) {
+      if (!isOurMove() && !allGood.includes(move.san)) {
         // to have a chance see the wrong move made before reverting back
         setTimeout(async () => {
           chess.undo();
@@ -207,6 +209,29 @@ function replay() {
   const moves = pgn2moves(pgn.value);
   showNextMove(moves, 0);
 }
+
+function continueWithMainLine() {
+  let mainLineStudyPliesLeft = mainLineStudyPliesLimit;
+  studyMainLine(mainLineStudyPliesLeft);
+}
+
+function studyMainLine(mainLineStudyPliesLeft) {
+  if (mainLineStudyPliesLeft) {
+    let moveSan = isOurMove()
+      ? getBestMoveSan() || getPopularMoveSan()
+      : getPopularMoveSan();
+    if (moveSan) {
+      setTimeout(async () => {
+        chess.move(moveSan);
+        await updateBoard();
+        studyMainLine(mainLineStudyPliesLeft - 1);
+      }, mainLineStudyInterval);
+    }
+  }
+}
+
+const getBestMoveSan = () => bestMove.value?.san;
+const getPopularMoveSan = () => popularMoves.value?.[0]?.san;
 
 const history = [];
 
@@ -269,13 +294,14 @@ onMounted(() => {
 
 <template>
   <div class="board-header">
-    <span class="opening">{{
-      openingInfo?.eco ? openingInfo.eco + ": " + openingInfo.name : ""
-    }}</span
-    >&nbsp;
-    <button id="learn" @click="replay">Learn</button>
-    <div class="hint">
-      {{ hint }}
+    <div class="controls">
+      <button id="replay" @click="replay">Replay & Learn</button>
+      <button id="continue" @click="continueWithMainLine">
+        Continue with Main Line
+      </button>
+    </div>
+    <div class="opening">
+      {{ openingInfo?.eco ? openingInfo.eco + ": " + openingInfo.name : hint }}
     </div>
   </div>
   <div class="main">
@@ -344,6 +370,7 @@ input {
 .opening {
   text-align: left;
   font-size: small;
+  margin: 2px;
 }
 #learn {
   text-align: right;
@@ -351,9 +378,6 @@ input {
 }
 #close {
   height: min-content;
-}
-.hint {
-  margin: 2px;
 }
 .highlight-best {
   box-shadow: inset 0 0 3px 3px greenyellow;
@@ -382,5 +406,9 @@ input {
 }
 .main-column {
   flex: auto;
+}
+button {
+  margin-left: 2px;
+  margin-right: 2px;
 }
 </style>
