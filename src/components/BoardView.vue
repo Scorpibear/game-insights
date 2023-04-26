@@ -140,17 +140,23 @@ function onSnapEnd() {
 async function updateMoveInfo() {
   bestMove.value = undefined;
   popularMoves.value = undefined;
-  await backend
-    .getBestMove(fen.value)
-    .then((data) => (bestMove.value = formatBest(data)))
-    .catch(() => (bestMove.value = null))
-    .finally(() => highlightMove(getBestMoveSan(), "best"))
-    .then(analyze);
-  await backend
-    .getPopularMoves(fen.value)
-    .then(updatePopular)
-    .catch(() => (popularMoves.value = null))
-    .finally(() => highlightMove(getPopularMoveSan(), "popular"));
+  try {
+    const data = await backend.getBestMove(fen.value);
+    bestMove.value = formatBest(data);
+  } catch {
+    bestMove.value = null;
+  } finally {
+    highlightMove(getBestMoveSan(), "best");
+    analyze();
+  }
+  try {
+    const popular = await backend.getPopularMoves(fen.value);
+    updatePopular(popular);
+  } catch {
+    popularMoves.value = null;
+  } finally {
+    highlightMove(getPopularMoveSan(), "popular");
+  }
 }
 
 const updateFen = () => (fen.value = chess.fen());
@@ -177,10 +183,10 @@ async function updateBoard() {
   board.position(fen.value);
 }
 
-function reset() {
+async function reset() {
   hint.value = "";
   chess.reset();
-  updateBoard();
+  await updateBoard();
 }
 
 function showNextMove(moves, plyNumber) {
@@ -224,6 +230,7 @@ function studyMainLine(mainLineStudyPliesLeft) {
       setTimeout(async () => {
         chess.move(moveSan);
         await updateBoard();
+        updatePgn();
         studyMainLine(mainLineStudyPliesLeft - 1);
       }, mainLineStudyInterval);
     }
@@ -322,7 +329,7 @@ onMounted(() => {
   </div>
   <div class="copyables">
     <div class="pair">
-      <label class="name">FEN</label>
+      <label class="name" for="fen">FEN</label>
       <input
         id="fen"
         class="copyable autoselect analyse__underboard__fen"
@@ -331,7 +338,7 @@ onMounted(() => {
     </div>
     <div class="pgn">
       <div class="pair">
-        <label class="name">PGN</label>
+        <label class="name" for="pgn">PGN</label>
         <textarea
           id="pgn"
           v-model="pgn"

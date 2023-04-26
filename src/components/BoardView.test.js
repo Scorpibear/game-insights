@@ -1,5 +1,5 @@
 import { render, fireEvent } from "@testing-library/vue";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 
 // mocks to make Chessboard work
 window.$ = () => {};
@@ -10,6 +10,16 @@ const backend = {
   getBestMove: () => Promise.resolve({ bestMove: "e4" }),
   getPopularMoves: () => Promise.resolve([]),
 };
+
+async function execNow(fn) {
+  try {
+    await fn();
+  } catch (err) {
+    // Do nothing
+  }
+}
+
+const game = { pgn: "1. e4 c6" };
 
 import BoardView from "./BoardView.vue";
 
@@ -66,6 +76,7 @@ describe("BoardView", () => {
     const { getByText } = render(BoardView, {
       props: { backend, game: { pgn: "1. e4" } },
     });
+    vi.spyOn(global, "setTimeout").mockImplementation(execNow);
 
     const button = getByText("Continue with Main Line");
     await fireEvent.click(button);
@@ -80,11 +91,14 @@ describe("BoardView", () => {
   });
   it("close the board emits board.replaceWith event", async () => {
     const wrapper = render(BoardView, {
-      props: { backend, game: { pgn: "1. e4" } },
+      props: { backend, game },
     });
 
     const button = wrapper.getByRole("button", { name: "x" });
     await fireEvent.click(button);
     expect(wrapper.emitted()).toHaveProperty("replaceWith");
+  });
+  afterEach(() => {
+    vi.resetAllMocks();
   });
 });
