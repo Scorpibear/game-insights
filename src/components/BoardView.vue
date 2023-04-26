@@ -258,17 +258,12 @@ function goNext() {
 }
 
 function split(moves) {
-  const games = moves.map((move) => {
-    const chessCopy = new Chess();
-    chessCopy.load_pgn(pgn.value);
-    chessCopy.move(move);
-    const game = {
-      pgn: chessCopy.pgn(),
-      username: props.game.username,
-      orientation: board.orientation(),
-    };
-    return game;
-  });
+  const games = boardHelper.getGames(
+    pgn.value,
+    moves,
+    props.game.username,
+    board.orientation()
+  );
   emit("replaceWith", games);
 }
 
