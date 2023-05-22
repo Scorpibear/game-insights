@@ -107,6 +107,21 @@ describe("BoardView", () => {
     await fireEvent.click(button);
     console.log(wrapper.emitted());
   });*/
+  it("shows opening passed as a property", async () => {
+    const { getByText } = render(BoardView, {
+      props: {
+        backend,
+        game: {
+          ...game,
+          openingInfo: {
+            eco: "B90",
+            name: "Sicilian Defense: Najdorf Variation, Adams Attack",
+          },
+        },
+      },
+    });
+    getByText("B90: Sicilian Defense: Najdorf Variation, Adams Attack");
+  });
   afterEach(() => {
     vi.resetAllMocks();
   });

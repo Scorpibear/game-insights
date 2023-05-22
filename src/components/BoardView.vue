@@ -72,7 +72,7 @@ const hint = ref(
 );
 const bestMove = ref(props.bestMove);
 const popularMoves = ref(props.popularMoves);
-const openingInfo = ref({});
+const openingInfo = ref(props.game?.openingInfo);
 
 const emit = defineEmits(["replaceWith"]);
 
@@ -259,10 +259,13 @@ function goNext() {
 
 function split(moves) {
   const games = boardHelper.getGames(
-    chess.pgn(),
-    moves,
-    props.game.username,
-    board.orientation()
+    {
+      pgn: chess.pgn(),
+      username: props.game.username,
+      orientation: board.orientation(),
+      openingInfo: openingInfo.value,
+    },
+    moves
   );
   emit("replaceWith", games);
 }
