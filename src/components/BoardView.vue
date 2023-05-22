@@ -259,7 +259,7 @@ function goNext() {
 
 function split(moves) {
   const games = boardHelper.getGames(
-    pgn.value,
+    chess.pgn(),
     moves,
     props.game.username,
     board.orientation()

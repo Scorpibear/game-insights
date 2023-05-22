@@ -8,7 +8,8 @@ window.Chessboard = () => ({ orientation: () => "white", position: () => {} });
 const backend = {
   updateAltMoves: () => {},
   getBestMove: () => Promise.resolve({ bestMove: "e4" }),
-  getPopularMoves: () => Promise.resolve([]),
+  getPopularMoves: () =>
+    Promise.resolve([{ san: "d4" }, { san: "e4" }, { san: "Nf3" }]),
 };
 
 async function execNow(fn) {
@@ -98,6 +99,14 @@ describe("BoardView", () => {
     await fireEvent.click(button);
     expect(wrapper.emitted()).toHaveProperty("replaceWith");
   });
+  /* make it work
+  it("users actual position when split", async () => {
+    const wrapper = render(BoardView, { props: { backend, game } });
+
+    const button = wrapper.getByAltText("split");
+    await fireEvent.click(button);
+    console.log(wrapper.emitted());
+  });*/
   afterEach(() => {
     vi.resetAllMocks();
   });
