@@ -12,7 +12,9 @@ describe("boardHelper", () => {
     const username = "nakajan";
     const orientation = "white";
     it("saves username and orientation", () => {
-      expect(boardHelper.getGames(pgn, moves, username, orientation)).toEqual([
+      expect(
+        boardHelper.getGames({ pgn, username, orientation }, moves)
+      ).toEqual([
         { pgn: pgn + " 2. d4", username, orientation },
         { pgn: pgn + " 2. Nf3", username, orientation },
       ]);

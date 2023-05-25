@@ -8,7 +8,8 @@ window.Chessboard = () => ({ orientation: () => "white", position: () => {} });
 const backend = {
   updateAltMoves: () => {},
   getBestMove: () => Promise.resolve({ bestMove: "e4" }),
-  getPopularMoves: () => Promise.resolve([]),
+  getPopularMoves: () =>
+    Promise.resolve([{ san: "d4" }, { san: "e4" }, { san: "Nf3" }]),
 };
 
 async function execNow(fn) {
@@ -97,6 +98,29 @@ describe("BoardView", () => {
     const button = wrapper.getByRole("button", { name: "x" });
     await fireEvent.click(button);
     expect(wrapper.emitted()).toHaveProperty("replaceWith");
+  });
+  /* make it work
+  it("users actual position when split", async () => {
+    const wrapper = render(BoardView, { props: { backend, game } });
+
+    const button = wrapper.getByAltText("split");
+    await fireEvent.click(button);
+    console.log(wrapper.emitted());
+  });*/
+  it("shows opening passed as a property", async () => {
+    const { getByText } = render(BoardView, {
+      props: {
+        backend,
+        game: {
+          ...game,
+          openingInfo: {
+            eco: "B90",
+            name: "Sicilian Defense: Najdorf Variation, Adams Attack",
+          },
+        },
+      },
+    });
+    getByText("B90: Sicilian Defense: Najdorf Variation, Adams Attack");
   });
   afterEach(() => {
     vi.resetAllMocks();
