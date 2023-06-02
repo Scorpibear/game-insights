@@ -13,4 +13,9 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
+  globals: {
+    cy: "readonly",
+    describe: "readonly",
+    it: "readonly",
+  },
 };
