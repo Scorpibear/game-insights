@@ -63,17 +63,19 @@ onMounted(() => {
         class="username"
         type="text"
         title="chess.com username"
+        name="chesscom-username"
       />
     </label>
     <label
       >lichess /
       <input
         v-model="liUsername"
+        name="lichess-username"
         class="username"
         type="text"
         title="lichess.org username"
     /></label>
-    <button @click="getInsights">Get!</button>
+    <button name="get" @click="getInsights">Get!</button>
   </div>
 </template>
 
