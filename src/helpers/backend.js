@@ -27,6 +27,12 @@ export class Backend {
   analyze(moves) {
     return this.cheguraClient.analyze(moves);
   }
+
+  /**
+   * Get best move for provided fen
+   * @param {string} fen FEN notation as a string
+   * @returns {Promise<{bestMove: string, alt: Array<string>, fen: string}>} information about the best move (san) and alternative best (array of san), if there is such
+   */
   async getBestMove(fen) {
     let fenData;
     try {
@@ -40,6 +46,11 @@ export class Backend {
     const alt = this.altMovesDB.get(fen);
     return alt !== undefined ? { ...data, alt } : data;
   }
+  /**
+   *
+   * @param {string} fen
+   * @returns {Promise<{moves: [{san: string, masterGamesAmount: number, onlineGamesAmount: number}], opening: string}>}
+   */
   async getPopularMoves(fen) {
     let jointData = {};
     try {

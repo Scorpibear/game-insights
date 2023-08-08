@@ -1,4 +1,5 @@
-import { addUsername, endTime2lastMoveAt, pgn2moves } from "./converters";
+import { addUsername, endTime2lastMoveAt } from "./converters";
+import { pgn2moves } from "./pgn-manipulations";
 
 export class GamesMerger {
   static PLY_REQUIRED = 5;
@@ -11,7 +12,7 @@ export class GamesMerger {
     const chessComGames = (
       await this.chessComClient.getLastGames(
         userData.chessComUsername,
-        amount * filterKoef
+        amount * filterKoef,
       )
     )
       .map(endTime2lastMoveAt)
@@ -19,7 +20,7 @@ export class GamesMerger {
     const lichessGames = (
       await this.lichessClient.getLastGames(
         userData.lichessUsername,
-        amount * filterKoef
+        amount * filterKoef,
       )
     ).map(addUsername(userData.lichessUsername));
     const games = chessComGames

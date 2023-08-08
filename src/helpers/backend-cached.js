@@ -44,7 +44,7 @@ export class BackendCached {
   }
   async getPopularMoves(fen) {
     let result = this.popularCache.get(fen);
-    if (!result) {
+    if (!result?.moves) {
       result = await this.backend.getPopularMoves(fen);
       this.popularCache.set(fen, result);
     }

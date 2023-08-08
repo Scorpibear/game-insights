@@ -9,7 +9,7 @@ const backend = {
   updateAltMoves: () => {},
   getBestMove: () => Promise.resolve({ bestMove: "e4" }),
   getPopularMoves: () =>
-    Promise.resolve([{ san: "d4" }, { san: "e4" }, { san: "Nf3" }]),
+    Promise.resolve({ moves: [{ san: "d4" }, { san: "e4" }, { san: "Nf3" }] }),
 };
 
 async function execNow(fn) {
@@ -122,6 +122,23 @@ describe("BoardView", () => {
     });
     getByText("B90: Sicilian Defense: Najdorf Variation, Adams Attack");
   });
+  // button does not appear
+  /*
+  it("listens to split2top18", async () => {
+    console.log("TEST START");
+    const wrapper = render(BoardView, {
+      props: { backend, game },
+    });
+    console.log("RENDER ENDS");
+    const button = wrapper.getByRole("button", { name: "18" });
+    console.log("SEARCH FOR THE BUTTON FINISHED");
+    await fireEvent.click(button);
+    console.log("CLICK ON THE BUTTON FINISHED");
+    expect(wrapper.emitted()).toHaveProperty("split2top18");
+    console.log("TEST END");
+  });
+  */
+
   afterEach(() => {
     vi.resetAllMocks();
   });

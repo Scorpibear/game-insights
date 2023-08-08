@@ -3,10 +3,12 @@
 
 import { onMounted, ref } from "vue";
 import { Chess } from "chess.js";
-import { pgn2moves, formatBest } from "../helpers/converters";
+import { formatBest } from "../helpers/converters";
+import { pgn2moves } from "../helpers/pgn-manipulations";
 import boardHelper from "../helpers/board-helper";
 import GoodMovesView from "./GoodMovesView.vue";
 import PopularMovesView from "./PopularMovesView.vue";
+import SplitStrategy from "../helpers/split-strategy";
 
 // constants
 
@@ -15,13 +17,14 @@ const mainLineStudyInterval = 1000;
 const mainLineStudyPliesLimit = 10;
 const maxReplayPlies = 50;
 const targetDepth = 46;
+const popularCount = 3;
 const squareClass = "square-55d63";
 
 const boardID = "chessBoard" + Math.round(Math.random() * 1000000);
 
 // variables
 
-let board, $board, chess, backend;
+let board, $board, chess, splitStrategy;
 
 const boardConfig = {
   draggable: true,
@@ -68,7 +71,7 @@ const props = defineProps({
 const fen = ref("");
 const pgn = ref("");
 const hint = ref(
-  "Let's learn something about this game. Press 'Reply & Learn' when ready"
+  "Let's learn something about this game. Press 'Reply & Learn' when ready",
 );
 const bestMove = ref(props.bestMove);
 const popularMoves = ref(props.popularMoves);
@@ -141,7 +144,7 @@ async function updateMoveInfo() {
   bestMove.value = undefined;
   popularMoves.value = undefined;
   try {
-    const data = await backend.getBestMove(fen.value);
+    const data = await props.backend.getBestMove(fen.value);
     bestMove.value = formatBest(data);
   } catch {
     bestMove.value = null;
@@ -150,7 +153,7 @@ async function updateMoveInfo() {
     analyze();
   }
   try {
-    const popular = await backend.getPopularMoves(fen.value);
+    const popular = await props.backend.getPopularMoves(fen.value);
     updatePopular(popular);
   } catch {
     popularMoves.value = null;
@@ -165,7 +168,7 @@ const updatePgn = () => (pgn.value = chess.pgn());
 
 // need a sample of the data format
 function updatePopular(data) {
-  popularMoves.value = data?.moves?.slice(0, 3);
+  popularMoves.value = data?.moves?.slice(0, popularCount);
   if (data?.opening) {
     openingInfo.value = data?.opening;
   }
@@ -173,7 +176,7 @@ function updatePopular(data) {
 
 function analyze() {
   if (!bestMove.value?.san || bestMove.value.depth < targetDepth) {
-    backend.analyze(pgn2moves(pgn.value));
+    props.backend.analyze(pgn2moves(pgn.value));
   }
 }
 
@@ -257,16 +260,24 @@ function goNext() {
   }
 }
 
-function split(moves) {
-  const games = boardHelper.getGames(
-    {
-      pgn: chess.pgn(),
-      username: props.game.username,
-      orientation: board.orientation(),
-      openingInfo: openingInfo.value,
-    },
-    moves
-  );
+function split2top3(moves) {
+  const startPgn = chess.pgn();
+  const gameInfo = getGameMetaInfo();
+  const games = boardHelper.getGames({ pgn: startPgn, ...gameInfo() }, moves);
+  emit("replaceWith", games);
+}
+
+const getGameMetaInfo = () => ({
+  username: props.game.username,
+  orientation: board.orientation(),
+  openingInfo: openingInfo.value,
+});
+
+async function split2top18() {
+  const startPgn = chess.pgn();
+  const gameInfo = getGameMetaInfo();
+  const pgnList = await splitStrategy.split2top18(startPgn);
+  const games = pgnList.map((pgn) => ({ pgn, ...gameInfo }));
   emit("replaceWith", games);
 }
 
@@ -277,13 +288,12 @@ function close() {
 function updateAltMoves(altMoves) {
   if (!bestMove.value) bestMove.value = {};
   bestMove.value.alt = altMoves;
-  backend.updateAltMoves(fen.value, altMoves);
+  props.backend.updateAltMoves(fen.value, altMoves);
 }
 
 // lifecycle hooks
 
 onMounted(() => {
-  backend = props.backend;
   pgn.value = props.game.pgn;
   board = window.Chessboard(boardID, boardConfig);
   $board = window.$(`#${boardID}`);
@@ -291,9 +301,10 @@ onMounted(() => {
   chess.load_pgn(pgn.value);
   board.orientation(
     props.game.orientation ||
-      boardHelper.identifyOrientation(chess, props.game.username)
+      boardHelper.identifyOrientation(chess, props.game.username),
   );
   updateBoard();
+  splitStrategy = new SplitStrategy(props.backend);
 });
 </script>
 
@@ -319,7 +330,11 @@ onMounted(() => {
   </div>
   <div class="stats">
     <GoodMovesView :data="bestMove" @update-alt="updateAltMoves" />
-    <PopularMovesView :data="popularMoves" @split="split" />
+    <PopularMovesView
+      :data="popularMoves"
+      @split2top3="split2top3"
+      @split2top18="split2top18"
+    />
   </div>
   <div class="navigation">
     <button class="control" @click="goBack">&laquo;</button>
@@ -374,7 +389,7 @@ input {
 }
 .opening {
   text-align: left;
-  font-size: small;
+  font-size: 12px;
   margin: 2px;
 }
 #learn {
@@ -401,7 +416,7 @@ input {
 .stats {
   word-wrap: normal;
   width: auto;
-  font-size: smaller;
+  font-size: 12px;
 }
 .chessboard {
   display: block;
