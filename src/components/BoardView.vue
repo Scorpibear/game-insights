@@ -260,6 +260,12 @@ function goNext() {
   }
 }
 
+const getGameMetaInfo = () => ({
+  username: props.game.username,
+  orientation: board.orientation(),
+  openingInfo: openingInfo.value,
+});
+
 function split2top3(moves) {
   const startPgn = chess.pgn();
   const gameInfo = getGameMetaInfo();
@@ -267,16 +273,10 @@ function split2top3(moves) {
   emit("replaceWith", games);
 }
 
-const getGameMetaInfo = () => ({
-  username: props.game.username,
-  orientation: board.orientation(),
-  openingInfo: openingInfo.value,
-});
-
 async function split2top18() {
   const startPgn = chess.pgn();
   const gameInfo = getGameMetaInfo();
-  const pgnList = await splitStrategy.split2top18(startPgn);
+  const pgnList = await splitStrategy.split2top(18, startPgn);
   const games = pgnList.map((pgn) => ({ pgn, ...gameInfo }));
   emit("replaceWith", games);
 }

@@ -15,6 +15,12 @@ describe("SplitStrategy", () => {
   beforeAll(() => {
     strategy = new SplitStrategy(backend);
   });
+  describe("addBestMove", () => {
+    it("extends pgn with the best move", async () => {
+      const result = await strategy.addBestMove("1. e4 e5");
+      expect(result).toEqual("1. e4 e5 2. Nf3");
+    });
+  });
   describe("split2top3", () => {
     it("gets 3 from popular", async () => {
       spyOn(backend, "getPopularMoves").mockResolvedValueOnce({
