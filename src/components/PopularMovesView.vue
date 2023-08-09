@@ -10,13 +10,17 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["split"]);
+const emit = defineEmits(["split2top3", "split2top18"]);
 
-function split() {
+function split2top3() {
   emit(
-    "split",
-    props.data.map((item) => item.san)
+    "split2top3",
+    props.data.map((item) => item.san),
   );
+}
+
+function split2top18() {
+  emit("split2top18");
 }
 </script>
 <template>
@@ -30,16 +34,27 @@ function split() {
     </span>
     <button
       v-if="props.data && props.data.length > 1"
-      id="split"
-      alt="split"
-      @click="split"
+      id="split2top3"
+      alt="split to top 3 positions"
+      class="split-sign"
+      @click="split2top3"
     >
       Ψ
+    </button>
+    <button
+      v-if="props.data && props.data.length > 1"
+      id="split2top18"
+      name="split2top18"
+      alt="split to top 18 positions"
+      @click="split2top18"
+    >
+      18
     </button>
   </div>
 </template>
 <style scoped>
-#split {
+.split-sign {
   transform: rotate(90deg);
+  padding: 3px;
 }
 </style>

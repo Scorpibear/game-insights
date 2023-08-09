@@ -1,17 +1,25 @@
-import { Chess } from "chess.js";
+import { pgn2chessObject } from "./pgn-manipulations";
+import SplitStrategy from "../helpers/split-strategy";
 
-export default {
-  getGames: (initGame, moves) => {
-    const chessCopy = new Chess();
-    chessCopy.load_pgn(initGame.pgn);
+export default class BoardHelper {
+  constructor(backend) {
+    this.splitStrategy = new SplitStrategy(backend);
+  }
+  getGamesFromMoves(initGame, moves) {
+    const chessCopy = pgn2chessObject(initGame.pgn);
     return moves.map((move) => {
       chessCopy.move(move);
       const game = { ...initGame, pgn: chessCopy.pgn() };
       chessCopy.undo();
       return game;
     });
-  },
-  identifyOrientation: (chess, username) => {
+  }
+  async getTopGames(initGame, count) {
+    const pgnList = await this.splitStrategy.split2top(count, initGame.pgn);
+    const games = pgnList.map((pgn) => ({ ...initGame, pgn }));
+    return games;
+  }
+  identifyOrientation(chess, username) {
     return username
       ? chess.header()?.White?.toLowerCase() == username?.toLowerCase()
         ? "white"
@@ -19,5 +27,13 @@ export default {
       : chess.turn() == "w"
       ? "white"
       : "black";
-  },
-};
+  }
+  getGameInfo(props, board, openingInfoRef, chessObject) {
+    return {
+      username: props.game.username,
+      orientation: board.orientation(),
+      openingInfo: openingInfoRef.value,
+      pgn: chessObject.pgn(),
+    };
+  }
+}
