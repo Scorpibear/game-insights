@@ -5,10 +5,9 @@ import { onMounted, ref } from "vue";
 import { Chess } from "chess.js";
 import { formatBest } from "../helpers/converters";
 import { pgn2moves } from "../helpers/pgn-manipulations";
-import boardHelper from "../helpers/board-helper";
+import BoardHelper from "../helpers/board-helper";
 import GoodMovesView from "./GoodMovesView.vue";
 import PopularMovesView from "./PopularMovesView.vue";
-import SplitStrategy from "../helpers/split-strategy";
 
 // constants
 
@@ -24,7 +23,7 @@ const boardID = "chessBoard" + Math.round(Math.random() * 1000000);
 
 // variables
 
-let board, $board, chess, splitStrategy;
+let board, $board, chess, boardHelper;
 
 const boardConfig = {
   draggable: true,
@@ -260,26 +259,14 @@ function goNext() {
   }
 }
 
-const getGameMetaInfo = () => ({
-  username: props.game.username,
-  orientation: board.orientation(),
-  openingInfo: openingInfo.value,
-});
+const getGameInfo = () =>
+  boardHelper.getGameInfo(props, board, openingInfo, chess);
 
-function split2top3(moves) {
-  const startPgn = chess.pgn();
-  const gameInfo = getGameMetaInfo();
-  const games = boardHelper.getGames({ pgn: startPgn, ...gameInfo() }, moves);
-  emit("replaceWith", games);
-}
+const split2top3 = (moves) =>
+  emit("replaceWith", boardHelper.getGamesFromMoves(getGameInfo(), moves));
 
-async function split2top18() {
-  const startPgn = chess.pgn();
-  const gameInfo = getGameMetaInfo();
-  const pgnList = await splitStrategy.split2top(18, startPgn);
-  const games = pgnList.map((pgn) => ({ pgn, ...gameInfo }));
-  emit("replaceWith", games);
-}
+const split2top18 = async () =>
+  emit("replaceWith", await boardHelper.getTopGames(getGameInfo(), 18));
 
 function close() {
   emit("replaceWith", []);
@@ -299,12 +286,12 @@ onMounted(() => {
   $board = window.$(`#${boardID}`);
   chess = new Chess();
   chess.load_pgn(pgn.value);
+  boardHelper = new BoardHelper(props.backend);
   board.orientation(
     props.game.orientation ||
       boardHelper.identifyOrientation(chess, props.game.username),
   );
   updateBoard();
-  splitStrategy = new SplitStrategy(props.backend);
 });
 </script>
 
