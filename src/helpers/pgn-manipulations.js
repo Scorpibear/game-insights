@@ -20,12 +20,6 @@ export const pgn2moves = (pgn) =>
 
 export const pgn2fen = (pgn) => chessObject2fen(pgn2chessObject(pgn));
 
-export function pgn2nextMoveFen(pgn, nextMove) {
-  const chess = pgn2chessObject(pgn);
-  chess.move(nextMove);
-  return chessObject2fen(chess);
-}
-
 export function pgn2chessObject(pgn) {
   let chess = new Chess();
   chess.load_pgn(pgn);
