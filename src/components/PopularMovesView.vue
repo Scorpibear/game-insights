@@ -57,4 +57,7 @@ function split2top18() {
   transform: rotate(90deg);
   padding: 3px;
 }
+.popular-move-info {
+  height: 20pt;
+}
 </style>
