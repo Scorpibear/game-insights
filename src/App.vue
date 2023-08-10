@@ -54,5 +54,6 @@ const backend = BackendCached.getShared();
 .game-view {
   display: inline-block;
   margin: 5pt;
+  width: 300pt;
 }
 </style>

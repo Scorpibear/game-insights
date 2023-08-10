@@ -330,11 +330,7 @@ onMounted(() => {
   <div class="copyables">
     <div class="pair">
       <label class="name" for="fen">FEN</label>
-      <input
-        id="fen"
-        class="copyable autoselect analyse__underboard__fen"
-        :value="fen"
-      />
+      <input id="fen" class="copyable autoselect fen-value" :value="fen" />
     </div>
     <div class="pgn">
       <div class="pair">
@@ -367,16 +363,20 @@ input {
 .copyables .name {
   flex: 0 0 5ch;
   font-weight: bold;
-  font-size: smaller;
+  font-size: 10pt;
   color: #787878;
 }
 .copyable {
   background: #e3e3e3;
   color: #1f1f1f;
+  font-size: 8pt;
+}
+.fen-value {
+  font-size: 7pt;
 }
 .opening {
   text-align: left;
-  font-size: 12px;
+  font-size: 11px;
   margin: 2px;
 }
 #learn {
