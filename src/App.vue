@@ -5,7 +5,7 @@ import HeaderView from "./components/HeaderView.vue";
 import BoardView from "./components/BoardView.vue";
 import FooterView from "./components/FooterView.vue";
 
-import { BackendCached } from "./helpers/backend-cached";
+import { BackendCached } from "./backend/backend-cached";
 
 const state = reactive({
   games: [
@@ -32,7 +32,7 @@ const backend = BackendCached.getShared();
       }
     "
   />
-  <div v-for="(game, index) in state.games" :key="game" class="game-view">
+  <div v-for="(game, index) in state.games" :id="'board'+index" :key="game" class="game-view">
     <BoardView
       :game="game"
       :backend="backend"

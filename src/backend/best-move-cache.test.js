@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import BestMoveCache from "./best-move-cache";
-import { fourWeeks, fourHours } from "./constants";
+import { fourWeeks, fourHours } from "../helpers/constants";
 
 describe("bestMoveCache", () => {
   const fenBase = [["fen1", { bestMove: "Nf3" }]];

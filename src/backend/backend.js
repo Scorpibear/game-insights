@@ -1,9 +1,9 @@
 import { CheguraClient } from "../clients/chegura-client";
 import { ChessComClient } from "../clients/chesscom-client";
 import { LichessClient } from "../clients/lichess-client";
-import { mergeGameStats } from "./converters";
+import { mergeGameStats } from "../helpers/converters";
 import BestMoveCache from "./best-move-cache";
-import { GamesMerger } from "./games-merger";
+import { GamesMerger } from "../helpers/games-merger";
 import { AltMovesDBSynced } from "./alt-moves-db-synced";
 
 export class Backend {
