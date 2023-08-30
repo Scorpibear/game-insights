@@ -1,6 +1,6 @@
 import { Backend } from "./backend";
-import HistoryLocal from "./history-local";
-import { fourDays, fourMonths } from "./constants";
+import HistoryLocal from "../helpers/history-local";
+import { fourDays, fourMonths } from "../helpers/constants";
 
 const plyLimit = 50;
 

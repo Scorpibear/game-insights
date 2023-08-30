@@ -1,4 +1,4 @@
-import { fourHours, fourWeeks } from "./constants";
+import { fourHours, fourWeeks } from "../helpers/constants";
 
 export default class BestMoveCache {
   constructor(cloudClient) {

@@ -8,6 +8,7 @@ import { pgn2moves } from "../helpers/pgn-manipulations";
 import BoardHelper from "../helpers/board-helper";
 import GoodMovesView from "./GoodMovesView.vue";
 import PopularMovesView from "./PopularMovesView.vue";
+import PositionInfoView from "./PositionInfoView.vue";
 
 // constants
 
@@ -324,26 +325,10 @@ onMounted(() => {
     />
   </div>
   <div class="navigation">
-    <button class="control" @click="goBack">&laquo;</button>
-    <button class="control" @click="goNext">&raquo;</button>
+    <button id="back" class="control" @click="goBack">&laquo;</button>
+    <button id="next" class="control" @click="goNext">&raquo;</button>
   </div>
-  <div class="copyables">
-    <div class="pair">
-      <label class="name" for="fen">FEN</label>
-      <input id="fen" class="copyable autoselect fen-value" :value="fen" />
-    </div>
-    <div class="pgn">
-      <div class="pair">
-        <label class="name" for="pgn">PGN</label>
-        <textarea
-          id="pgn"
-          v-model="pgn"
-          class="copyable autoselect"
-          rows="4"
-        ></textarea>
-      </div>
-    </div>
-  </div>
+  <PositionInfoView :pgn="pgn" :fen="fen"></PositionInfoView>
   <footer></footer>
 </template>
 

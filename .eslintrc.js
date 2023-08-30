@@ -8,6 +8,7 @@ module.exports = {
     // override/add rules settings here, such as:
     // 'vue/no-unused-vars': 'error'
     "vue/script-setup-uses-vars": "error",
+    "indent": ["error", 2]
   },
   parserOptions: {
     ecmaVersion: "latest",
