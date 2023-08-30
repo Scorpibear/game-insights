@@ -31,13 +31,10 @@ onUpdated(() => {
   setNote();
 })
 
-function onNoteInput(e) {
-  props.noteManager.set(props.fen, e.target.value);
-}
+const onNoteInput = e => props.noteManager.set(props.fen, e.target.value);
 
 const setNote = () => {
-  const loadedNote = props.noteManager.get(props.fen);
-  note.value = loadedNote;
+  note.value = props.noteManager.get(props.fen);;
 }
 
 </script>
