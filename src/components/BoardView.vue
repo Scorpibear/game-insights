@@ -266,8 +266,8 @@ const getGameInfo = () =>
 const split2top3 = (moves) =>
   emit("replaceWith", boardHelper.getGamesFromMoves(getGameInfo(), moves));
 
-const split2top18 = async () =>
-  emit("replaceWith", await boardHelper.getTopGames(getGameInfo(), 18));
+const split2top = async (count) =>
+  emit("replaceWith", await boardHelper.getTopGames(getGameInfo(), count));
 
 function close() {
   emit("replaceWith", []);
@@ -321,7 +321,7 @@ onMounted(() => {
     <PopularMovesView
       :data="popularMoves"
       @split2top3="split2top3"
-      @split2top18="split2top18"
+      @split2top="split2top"
     />
   </div>
   <div class="navigation">
