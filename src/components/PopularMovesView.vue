@@ -10,17 +10,14 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["split2top3", "split2top18"]);
+const splitOptions = {3: "Ψ", 5: 5, 7: 7, 11: 11};
+const emit = defineEmits(["split2top3", "split2top"]);
 
-function split2top3() {
-  emit(
+function split2top(count) {
+  count == 3 ? emit(
     "split2top3",
     props.data.map((item) => item.san),
-  );
-}
-
-function split2top18() {
-  emit("split2top18");
+  ) : emit("split2top", count);
 }
 </script>
 <template>
@@ -32,32 +29,31 @@ function split2top18() {
     <span v-else>
       {{ props.data === undefined ? "searching..." : "no data" }}
     </span>
+    <div v-if="props.data && props.data.length > 1" class="split-area">
     <button
-      v-if="props.data && props.data.length > 1"
-      id="split2top3"
-      alt="split to top 3 positions"
-      class="split-sign"
-      @click="split2top3"
+      v-for="(glyph, count) in splitOptions"
+      :id="`split2top${count}`"
+      :key="count"
+      :alt="'split to top ' + count + ' positions'"
+      :class="'split-sign' + count"
+      @click="split2top(count)"
     >
-      Ψ
+      {{ glyph }}
     </button>
-    <button
-      v-if="props.data && props.data.length > 1"
-      id="split2top18"
-      name="split2top18"
-      alt="split to top 18 positions"
-      @click="split2top18"
-    >
-      18
-    </button>
+  </div>
   </div>
 </template>
 <style scoped>
-.split-sign {
+.split-sign3 {
   transform: rotate(90deg);
   padding: 3px;
 }
 .popular-move-info {
   height: 20pt;
+  font-size: 8pt;
+}
+.split-area {
+  display: inline;
+  margin-left: 3px;
 }
 </style>
