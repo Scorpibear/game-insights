@@ -60,6 +60,11 @@ describe("lichess client", () => {
       spyOn(global, "fetch").mockResolvedValue({ body });
       expect(await lichessClient.getGames("testuser", 1)).toEqual([game]);
     });
+    it("does not call fetch if username is not specified", async () => {
+      spyOn(global, 'fetch');
+      await lichessClient.getGames("", 2);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
   });
   afterEach(() => {
     vi.restoreAllMocks();

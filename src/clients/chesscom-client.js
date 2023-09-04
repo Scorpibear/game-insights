@@ -25,14 +25,18 @@ export class ChessComClient {
     }
   }
   async getLastGames(username, amount) {
-    const archives = await this.getGamesArchives(username);
     const games = [];
-    while (games.length < amount && archives.length > 0) {
-      const lastGames = await this.getGamesByUrl(archives.pop());
-      while (games.length < amount && lastGames.length > 0) {
-        games.push(lastGames.pop());
+    if(username) {
+      const archives = await this.getGamesArchives(username);
+      
+      while (games.length < amount && archives?.length > 0) {
+        const lastGames = await this.getGamesByUrl(archives.pop());
+        while (games.length < amount && lastGames.length > 0) {
+          games.push(lastGames.pop());
+        }
       }
+      games.reverse();
     }
-    return games.reverse();
+    return games;
   }
 }
