@@ -80,6 +80,12 @@ describe("chess.com client", () => {
       const games = await chesscomClient.getLastGames("testuser", 3);
       expect(games).toEqual([g2, g3, g4]);
     });
+    it("returns empty array if there are no games for the user", async () => {
+      spyOn(chesscomClient, "getGamesArchives").mockResolvedValue(undefined);
+      const games = await chesscomClient.getLastGames("", 1);
+      expect(games).toEqual([]);
+    })
+
     afterEach(() => {
       vi.restoreAllMocks();
     });
