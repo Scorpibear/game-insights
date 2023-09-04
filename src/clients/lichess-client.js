@@ -24,11 +24,16 @@ export class LichessClient {
   async getGames(userID, gamesToLoad = 3) {
     return new Promise((resolve, reject) => {
       try {
+        const games = [];
+        if(!userID) {
+          resolve(games);
+          return;
+        }
         const apiURL = this.getGamesEndpoint(userID, gamesToLoad);
         const stream = fetch(apiURL, {
           headers: { Accept: "application/x-ndjson" },
         });
-        const games = [];
+        
         const onMessage = (game) => {
           games.push(game);
         };
