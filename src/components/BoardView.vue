@@ -140,26 +140,20 @@ function onSnapEnd() {
   board.position(chess.fen());
 }
 
-async function updateMoveInfo() {
+function updateMoveInfo() {
   bestMove.value = undefined;
   popularMoves.value = undefined;
-  try {
-    const data = await props.backend.getBestMove(fen.value);
-    bestMove.value = formatBest(data);
-  } catch {
-    bestMove.value = null;
-  } finally {
-    highlightMove(getBestMoveSan(), "best");
-    analyze();
-  }
-  try {
-    const popular = await props.backend.getPopularMoves(fen.value);
-    updatePopular(popular);
-  } catch {
-    popularMoves.value = null;
-  } finally {
-    highlightMove(getPopularMoveSan(), "popular");
-  }
+  return new Promise((resolve, reject) => {
+    const p1 = props.backend.getBestMove(fen.value)
+      .then(data => bestMove.value = formatBest(data))
+      .catch(() => bestMove.value = null)
+      .finally(() => highlightMove(getBestMoveSan(), "best"))
+    const p2 = props.backend.getPopularMoves(fen.value)
+      .then(updatePopular)
+      .catch(() => popularMoves.value = null)
+      .finally(() => highlightMove(getPopularMoveSan(), "popular"));
+    Promise.all([p1, p2]).then(resolve).catch(reject).finally(analyze);
+  })
 }
 
 const updateFen = () => (fen.value = chess.fen());
