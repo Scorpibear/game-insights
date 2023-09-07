@@ -53,31 +53,31 @@ export const num2k = (num) =>
   num >= 1e12
     ? Math.floor(num / 1e12) + "Q"
     : num >= 1e9
-    ? Math.floor(num / 1e9) + "B"
-    : num >= 1e6
-    ? Math.floor(num / 1e6) + "M"
-    : num >= 1e3
-    ? Math.floor(num / 1e3) + "K"
-    : "" + num;
+      ? Math.floor(num / 1e9) + "B"
+      : num >= 1e6
+        ? Math.floor(num / 1e6) + "M"
+        : num >= 1e3
+          ? Math.floor(num / 1e3) + "K"
+          : "" + num;
 
 export const formatBest = (data) =>
   data
     ? data.bestMove
       ? {
-          san: data.bestMove,
-          score:
+        san: data.bestMove,
+        score:
             "score" in data
               ? data.score
               : "cp" in data
-              ? data.cp / 100
-              : undefined,
-          depth: data.depth,
-          alt: data.alt,
-        }
+                ? data.cp / 100
+                : undefined,
+        depth: data.depth,
+        alt: data.alt,
+      }
       : data.alt
-      ? { alt: data.alt }
-      : {}
-    : data;
+        ? { alt: data.alt }
+        : {}
+    : null;
 
 export const formatPopular = (movesData) =>
   movesData
