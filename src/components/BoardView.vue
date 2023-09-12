@@ -4,6 +4,7 @@
 import { onMounted, ref } from "vue";
 import { Chess } from "chess.js";
 import { formatBest } from "../helpers/converters";
+import fenAnalyzer from "fen-analyzer";
 import { pgn2moves } from "../helpers/pgn-manipulations";
 import BoardHelper from "../helpers/board-helper";
 import GoodMovesView from "./GoodMovesView.vue";
@@ -118,7 +119,7 @@ function onDragStart(source, piece) {
   }
 }
 
-function onDrop(source, target) {
+async function onDrop(source, target) {
   // see if the move is legal
   var move = chess.move({
     from: source,
@@ -130,8 +131,8 @@ function onDrop(source, target) {
   if (move === null) return "snapback";
 
   updateFen();
-  updateMoveInfo();
   updatePgn();
+  await updateMoveInfo();
 }
 
 // update the board position after the piece snap
@@ -156,7 +157,7 @@ function updateMoveInfo() {
   })
 }
 
-const updateFen = () => (fen.value = chess.fen());
+const updateFen = () => (fen.value = fenAnalyzer.normalize(chess.fen()));
 
 const updatePgn = () => (pgn.value = chess.pgn());
 
@@ -226,8 +227,8 @@ function studyMainLine(mainLineStudyPliesLeft) {
     if (moveSan) {
       setTimeout(async () => {
         chess.move(moveSan);
-        await updateBoard();
         updatePgn();
+        await updateBoard();
         studyMainLine(mainLineStudyPliesLeft - 1);
       }, mainLineStudyInterval);
     }
