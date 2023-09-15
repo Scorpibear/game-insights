@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, afterEach } from "vitest";
 import { BackendCached } from "./backend-cached";
 const spyOn = vi.spyOn;
 
@@ -19,6 +19,11 @@ describe("backendCached", () => {
       expect(cached.analyzeCache.constructor.name).toBe("HistoryLocal");
     });
   });
+  describe("getShared", () => {
+    it("provides the same instance", () => {
+      expect(BackendCached.getShared()).toBe(BackendCached.getShared());
+    })
+  })
   describe("analyze", () => {
     it("does not send for analysis what was sent within 4 days", async () => {
       vi.spyOn(backend, "analyze").mockImplementation(() => Promise.resolve());
@@ -37,6 +42,9 @@ describe("backendCached", () => {
         expect(err).toContain("something went wrong");
       }
     });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    })
   });
   describe("getBestMove", () => {
     it("returns result from backend", async () => {
@@ -51,8 +59,20 @@ describe("backendCached", () => {
       cached.getPopularMoves(fen);
       expect(backend.getPopularMoves).toHaveBeenCalled();
     });
-    it("calls backend when cache is expired");
-    it("uses cache when it presented");
+    it("calls backend when cache is expired", () => {
+      spyOn(cached.popularCache, 'get').mockReturnValue(undefined);
+      spyOn(backend, "getPopularMoves");
+      cached.getPopularMoves(fen);
+      expect(backend.getPopularMoves).toHaveBeenCalled();
+    });
+    it("uses cache when it presented", async () => {
+      const cachedData = {moves: [{san: "f6", popularOnline: 67890}]};
+      spyOn(cached.popularCache, "get").mockReturnValue(cachedData);
+      expect(await cached.getPopularMoves(fen)).toBe(cachedData);
+    });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    })
   });
   describe("updateAltMoves", () => {
     it("calles backend as is", () => {
@@ -60,6 +80,9 @@ describe("backendCached", () => {
       cached.updateAltMoves("fen", ["c4"]);
       expect(backend.updateAltMoves).toHaveBeenCalledWith("fen", ["c4"]);
     });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    })
   });
   describe("getGames", () => {
     it("returns result from backend", async () => {
@@ -69,5 +92,8 @@ describe("backendCached", () => {
         games
       );
     });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    })
   });
 });
