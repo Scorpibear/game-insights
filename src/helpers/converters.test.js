@@ -145,6 +145,9 @@ describe("converters", () => {
     it("saves alt even if bestMove is missed", () => {
       expect(formatBest({ alt: ["e4"] })).toEqual({ alt: ["e4"] });
     });
+    it("returns null, if undefined is entered as an input", () => {
+      expect(formatBest(undefined)).toBeNull();
+    })
   });
   describe("formatPopular", () => {
     it("displays as a readable comma-separated string", () => {

@@ -1,22 +1,20 @@
 import { readStream } from "../helpers/stream-reader";
 
 export class LichessClient {
-  async getTheMostPopularByMasters(fen) {
+  getTheMostPopularByMasters(fen) {
     const url = `https://explorer.lichess.ovh/masters?fen=${fen}`;
-    const response = await fetch(url, {
+    return fetch(url, {
       headers: { Accept: "application/json" },
-    });
-    return response.json();
+    }).then(response => response.json()).catch(() => null);
   }
-  async getTheMostPopularOnline(fen, options) {
+  getTheMostPopularOnline(fen, options) {
     const speeds =
       options?.speeds?.join(",") || "blitz,rapid,classical,correspondence";
     const ratings = options?.ratings?.join(",") || "2000,2200,2500";
     const url = `https://explorer.lichess.ovh/lichess?variant=standard&speeds=${speeds}&ratings=${ratings}&fen=${fen}`;
-    const response = await fetch(url, {
+    return fetch(url, {
       headers: { Accept: "application/json" },
-    });
-    return response.json();
+    }).then(response => response.json()).catch(() => null);
   }
   getGamesEndpoint(userID, gamesToLoad) {
     return `https://lichess.org/api/games/user/${userID}?max=${gamesToLoad}&pgnInJson=true&opening=true`;

@@ -39,16 +39,19 @@ export class BackendCached {
     }
     return promisedResult;
   }
-  async getBestMove(fen) {
-    return await this.backend.getBestMove(fen);
+  getBestMove(fen) {
+    return this.backend.getBestMove(fen);
   }
-  async getPopularMoves(fen) {
-    let result = this.popularCache.get(fen);
-    if (!result?.moves) {
-      result = await this.backend.getPopularMoves(fen);
-      this.popularCache.set(fen, result);
+  getPopularMoves(fen) {
+    const cachedResult = this.popularCache.get(fen);
+    if (!cachedResult?.moves) {
+      return this.backend.getPopularMoves(fen)
+        .then(result => {
+          this.popularCache.set(fen, result);
+          return result;
+        })
     }
-    return result;
+    return Promise.resolve(cachedResult);
   }
   updateAltMoves(fen, altMoves) {
     this.backend.updateAltMoves(fen, altMoves);

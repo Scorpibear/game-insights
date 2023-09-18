@@ -4,7 +4,7 @@ const props = defineProps({
   data: {
     type: Array,
     default() {
-      return [];
+      return undefined;
     },
     required: false,
   },
