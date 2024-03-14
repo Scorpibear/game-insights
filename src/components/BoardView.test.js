@@ -21,6 +21,10 @@ async function execNow(fn) {
 }
 
 const game = { pgn: "1. e4 c6" };
+const fens = {
+  start: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "1. e4": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+};
 
 import BoardView from "./BoardView.vue";
 
@@ -138,6 +142,34 @@ describe("BoardView", () => {
     console.log("TEST END");
   });
   */
+  
+  it("shows last fen when the board is loaded", async () => {
+    // create board with 1.e4 game
+    const { findByTestId } = render(BoardView, {
+      props: { game: { pgn: "1. e4" }, backend },
+    });
+    
+    await findByTestId(fens["1. e4"]);
+  });
+  it("change fen to the initial when back is pressed in 1.e4 game", async () => {
+    const { getByTestId } = render(BoardView, {
+      props: { game: { pgn: "1. e4" }, backend },
+    });
+    
+    await fireEvent.click(getByTestId("back"));
+    
+    getByTestId(fens.start);
+  });
+  it("return fen to the last when next is pressed after back in 1.e4 game", async () => {
+    const { getByTestId } = render(BoardView, {
+      props: { game: { pgn: "1. e4" }, backend },
+    });
+    
+    await fireEvent.click(getByTestId("back"));
+    await fireEvent.click(getByTestId("next"));
+    
+    getByTestId(fens["1. e4"]);
+  });
 
   afterEach(() => {
     vi.resetAllMocks();
