@@ -320,10 +320,10 @@ onMounted(() => {
     />
   </div>
   <div class="navigation">
-    <button id="back" class="control" @click="goBack">&laquo;</button>
-    <button id="next" class="control" @click="goNext">&raquo;</button>
+    <button id="back" data-testid="back" class="control" @click="goBack">&laquo;</button>
+    <button id="next" data-testid="next" class="control" @click="goNext">&raquo;</button>
   </div>
-  <PositionInfoView :pgn="pgn" :fen="fen"></PositionInfoView>
+  <PositionInfoView :pgn="pgn" :fen="fen" :data-testid="fen"></PositionInfoView>
   <footer></footer>
 </template>
 
