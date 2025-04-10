@@ -1,5 +1,7 @@
+// App.vue
+
 <script setup>
-import { reactive } from "vue";
+import { reactive, onMounted } from "vue";
 
 import HeaderView from "./components/HeaderView.vue";
 import BoardView from "./components/BoardView.vue";
@@ -21,6 +23,25 @@ const state = reactive({
 });
 
 const backend = BackendCached.getShared();
+
+// Function to parse PGN from URL
+function loadGamesFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const pgnParam = urlParams.get("pgn");
+  if (pgnParam) {
+    try {
+      const games = pgnParam.split(";").map((pgn) => ({ pgn: pgn.trim() }));
+      state.games = games;
+    } catch (error) {
+      console.error("Failed to parse PGN from URL:", error);
+    }
+  }
+}
+
+// Load PGN data when the component is mounted
+onMounted(() => {
+  loadGamesFromUrl();
+});
 </script>
 
 <template>
