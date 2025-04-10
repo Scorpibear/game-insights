@@ -1,3 +1,4 @@
+// note-manager-synced.js
 import NoteManager from './note-manager'
 
 export const NOTE_STORE_KEY = "notes";
