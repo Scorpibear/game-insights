@@ -30,7 +30,7 @@
     "eslint-plugin-vue": "^9.33.0",
     "happy-dom": "^17.4.4",
     "prettier": "^3.5.3",
-    "vite": "^4.5.13",
+    "vite": "^6.3.2",
     "vitest": "^3.1.1"
   }
 }
