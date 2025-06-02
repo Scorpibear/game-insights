@@ -18,7 +18,7 @@
     "chess.js": "^0.13.4",
     "fen-analyzer": "^0.3.1",
     "node-cache": "^5.1.2",
-    "vue": "^3.5.13"
+    "vue": "^3.5.16"
   },
   "devDependencies": {
     "@testing-library/vue": "^8.1.0",
